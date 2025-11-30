@@ -5,8 +5,9 @@ Lightweight module for generating safe and efficient MySQL statements:
 - INSERT IGNORE
 - INSERT ... ON DUPLICATE KEY UPDATE (UPSERT)
 
-This package integrates with the core `aeatech/transaction-manager-core` and can be used with the Doctrine DBAL adapter (`aeatech/transaction-manager-doctrine-adapter`).
-It builds SQL and parameters; the core handles execution and retries.
+This package is an extension of `aeatech/transaction-manager-core`.
+It only builds SQL and parameters; the core package handles execution, retries, and transaction boundaries.
+For Doctrine DBAL users, there is an adapter package: `aeatech/transaction-manager-doctrine-adapter`.
 
 System requirements:
 - PHP >= 8.2
@@ -22,13 +23,19 @@ composer require aeatech/transaction-manager-mysql
 
 ```php
 <?php
-use AEATech\TransactionManager\MySQL\TransactionsFactory as MySqlTxFactory;
 use AEATech\TransactionManager\DoctrineAdapter\DbalConnectionAdapter;
+use AEATech\TransactionManager\ExecutionPlanBuilder;
+use AEATech\TransactionManager\ExponentialBackoff;
+use AEATech\TransactionManager\IsolationLevel;
+use AEATech\TransactionManager\MySQL\Internal\InsertValuesBuilder;
+use AEATech\TransactionManager\MySQL\MySQLErrorClassifier;
+use AEATech\TransactionManager\MySQL\Transaction\InsertOnDuplicateKeyUpdateTransactionFactory;
+use AEATech\TransactionManager\MySQL\Transaction\InsertTransactionFactory;
+use AEATech\TransactionManager\MySQL\TransactionsFactory as MySqlTxFactory;
+use AEATech\TransactionManager\RetryPolicy;
+use AEATech\TransactionManager\SystemSleeper;
 use AEATech\TransactionManager\TransactionManager;
 use AEATech\TransactionManager\TxOptions;
-use AEATech\TransactionManager\RetryPolicy;
-use AEATech\TransactionManager\ExponentialBackoff;
-use AEATech\TransactionManager\SystemSleeper;
 
 // 1) Create a connection adapter (Doctrine DBAL example):
 // $dbal = new Doctrine\DBAL\Connection(...);
@@ -36,22 +43,26 @@ $conn = new DbalConnectionAdapter($dbal);
 
 // 2) Configure the TransactionManager from the core:
 $tm = new TransactionManager(
+    executionPlanBuilder: new ExecutionPlanBuilder(),
     connection: $conn,
-    retryPolicy: RetryPolicy::default(new ExponentialBackoff(), new SystemSleeper()),
+    errorClassifier: new MySQLErrorClassifier(),
+    sleeper: new SystemSleeper(),
 );
 
 // 3) Create the MySQL transactions factory
-$mysql = new MySqlTxFactory(
-    insertTransactionFactory: new AEATech\TransactionManager\MySQL\Transaction\InsertTransactionFactory(
-        new AEATech\TransactionManager\MySQL\Internal\InsertValuesBuilder()
+$insertValuesBuilder = new InsertValuesBuilder();
+
+$txFactory = new MySqlTxFactory(
+    insertTransactionFactory: new InsertTransactionFactory(
+        $insertValuesBuilder
     ),
-    insertOnDuplicateKeyUpdateTransactionFactory: new AEATech\TransactionManager\MySQL\Transaction\InsertOnDuplicateKeyUpdateTransactionFactory(
-        new AEATech\TransactionManager\MySQL\Internal\InsertValuesBuilder()
+    insertOnDuplicateKeyUpdateTransactionFactory: new InsertOnDuplicateKeyUpdateTransactionFactory(
+        $insertValuesBuilder
     ),
 );
 
 // 4) Example: regular INSERT
-$tx = $mysql->createInsert(
+$tx = $txFactory->createInsert(
     tableName: 'users',
     rows: [
         ['id' => 1, 'email' => 'foo@example.com', 'name' => 'Foo'],
@@ -64,7 +75,11 @@ $tx = $mysql->createInsert(
     isIdempotent: false,
 );
 
-$options = TxOptions::default();
+$options = new TxOptions(
+    isolationLevel: IsolationLevel::ReadCommitted,
+    retryPolicy: new RetryPolicy(3, new ExponentialBackoff())
+);
+
 $runResult = $tm->run($tx, $options);
 ```
 
@@ -72,7 +87,7 @@ $runResult = $tm->run($tx, $options);
 
 ### 1) INSERT
 ```php
-$tx = $mysql->createInsert(
+$tx = $txFactory->createInsert(
     tableName: 'audit_log',
     rows: [
         ['event' => 'login', 'user_id' => 10, 'created_at' => new \DateTimeImmutable()],
@@ -90,7 +105,7 @@ $tm->run($tx, $options);
 ### 2) INSERT IGNORE
 Ignores constraint violations (e.g., duplicate key errors) and inserts the remaining rows where possible.
 ```php
-$tx = $mysql->createInsertIgnore(
+$tx = $txFactory->createInsertIgnore(
     tableName: 'products',
     rows: [
         ['id' => 1, 'sku' => 'A-001'],
@@ -105,7 +120,7 @@ $tm->run($tx, $options);
 ### 3) UPSERT: INSERT ... ON DUPLICATE KEY UPDATE
 Updates specified columns when a PRIMARY KEY/UNIQUE conflict is detected.
 ```php
-$tx = $mysql->createInsertOnDuplicateKeyUpdate(
+$tx = $txFactory->createInsertOnDuplicateKeyUpdate(
     tableName: 'users',
     rows: [
         ['id' => 1, 'email' => 'foo@example.com', 'name' => 'Foo'],
