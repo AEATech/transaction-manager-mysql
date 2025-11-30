@@ -1,0 +1,124 @@
+version: '3.3'
+services:
+    mysql-test-5.7:
+        image: mysql:5.7.31
+        restart: on-failure
+        networks:
+            - network-mysql-5.7
+        environment:
+            MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+            MYSQL_DATABASE: test
+            MYSQL_ROOT_HOST: '%'
+        command: >
+            --default-authentication-plugin=mysql_native_password
+            --max-connections=1000
+            --innodb-flush-log-at-trx-commit=0
+            --innodb-doublewrite=OFF
+            --innodb-autoinc-lock-mode=2
+            --skip-log-bin
+        logging:
+            driver: json-file
+            options:
+                max-size: '10m'
+                max-file: '10'
+    php-cli-8.2-mysql-5.7:
+        build:
+            context: 8.2/
+            args:
+                OWNER_USER: ${USER}
+                OWNER_USER_ID: 1000
+        networks:
+            - network-mysql-5.7
+        environment:
+            MYSQL_HOST: mysql-test-5.7
+        command: php -r "while (true) { sleep(86400); }"
+        working_dir: /app
+        volumes:
+            - ../../transaction-manager-mysql:/app:rw
+            - /home/${USER}/.ssh:/home/${USER}/.ssh:ro
+        extra_hosts:
+            - 'host.docker.internal:host-gateway'
+        depends_on:
+            - mysql-test-5.7
+    mysql-test-8:
+        image: mysql:8.0.29
+        restart: on-failure
+        networks:
+            - network-mysql-8
+        environment:
+            MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+            MYSQL_DATABASE: test
+            MYSQL_ROOT_HOST: '%'
+        command: >
+            --default-authentication-plugin=mysql_native_password
+            --max-connections=1000
+            --innodb-flush-log-at-trx-commit=0
+            --innodb-doublewrite=OFF
+            --innodb-autoinc-lock-mode=2
+            --skip-log-bin
+        logging:
+            driver: json-file
+            options:
+                max-size: '10m'
+                max-file: '10'
+    php-cli-8.2:
+        build:
+            context: 8.2/
+            args:
+                OWNER_USER: ${USER}
+                OWNER_USER_ID: 1000
+        networks:
+            - network-mysql-8
+        environment:
+            MYSQL_HOST: mysql-test-8
+        command: php -r "while (true) { sleep(86400); }"
+        working_dir: /app
+        volumes:
+            - ../../transaction-manager-mysql:/app:rw
+            - /home/${USER}/.ssh:/home/${USER}/.ssh:ro
+        extra_hosts:
+            - 'host.docker.internal:host-gateway'
+        depends_on:
+            - mysql-test-8
+    php-cli-8.3:
+        build:
+            context: 8.3/
+            args:
+                OWNER_USER: ${USER}
+                OWNER_USER_ID: 1000
+        networks:
+            - network-mysql-8
+        environment:
+            MYSQL_HOST: mysql-test-8
+        command: php -r "while (true) { sleep(86400); }"
+        working_dir: /app
+        volumes:
+            - ../../transaction-manager-mysql:/app:rw
+            - /home/${USER}/.ssh:/home/${USER}/.ssh:ro
+        extra_hosts:
+            - 'host.docker.internal:host-gateway'
+        depends_on:
+            - mysql-test-8
+    php-cli-8.4:
+        build:
+            context: 8.4/
+            args:
+                OWNER_USER: ${USER}
+                OWNER_USER_ID: 1000
+        networks:
+            - network-mysql-8
+        environment:
+            MYSQL_HOST: mysql-test-8
+        command: php -r "while (true) { sleep(86400); }"
+        working_dir: /app
+        volumes:
+            - ../../transaction-manager-mysql:/app:rw
+            - /home/${USER}/.ssh:/home/${USER}/.ssh:ro
+        extra_hosts:
+            - 'host.docker.internal:host-gateway'
+        depends_on:
+            - mysql-test-8
+
+networks:
+    network-mysql-8:
+    network-mysql-5.7:

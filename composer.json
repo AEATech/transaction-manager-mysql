@@ -1,0 +1,46 @@
+{
+  "name": "aeatech/transaction-manager-mysql",
+  "description": "",
+  "license": "MIT",
+  "config": {
+    "sort-packages": true
+  },
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "git@github.com:Shahelm/transaction-manager-core.git"
+        },
+        {
+            "type": "vcs",
+            "url": "git@github.com:Shahelm/transaction-manager-doctrine-adapter.git"
+        }
+    ],
+  "require": {
+    "php": ">=8.2",
+    "ext-pdo": "*",
+    "aeatech/transaction-manager-core": "^0.0.3",
+    "aeatech/transaction-manager-doctrine-adapter": "^0.0.1"
+  },
+  "require-dev": {
+    "mockery/mockery": "^1.6.10",
+    "phpunit/phpunit": "^11.5",
+    "roave/security-advisories": "dev-master"
+  },
+  "autoload": {
+    "psr-4": {
+      "AEATech\\TransactionManager\\MySQL\\": "src/AEATech/TransactionManager/MySQL"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+       "AEATech\\Test\\TransactionManager\\MySQL\\": "tests/AEATech/Test/TransactionManager/MySQL"
+    }
+  },
+  "archive": {
+    "exclude": [
+      "/docker",
+      "/tests",
+      "/phpunit.xml"
+    ]
+  }
+}
