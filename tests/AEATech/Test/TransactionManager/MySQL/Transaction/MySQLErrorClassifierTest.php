@@ -110,6 +110,46 @@ class MySQLErrorClassifierTest extends TestCase
     }
 
     #[Test]
+    public function connectionCodeInMessageWhenDriverCodeUnavailable_isDetectedViaHeuristic(): void
+    {
+        // Use PDOException with code 0 so extractErrorInfo() keeps driverCode as null
+        $e = new PDOException('Custom error 2006 occurred', 0);
+
+        self::assertSame(
+            ErrorType::Connection,
+            $this->classifier->classify($e),
+            'Should detect connection issue by code inside message when driver code is unavailable'
+        );
+    }
+
+    #[Test]
+    public function transientCodeInMessageWhenDriverCodeUnavailable_isDetectedViaHeuristic(): void
+    {
+        // Use PDOException with code 0 so extractErrorInfo() keeps driverCode as null
+        $e = new PDOException('Encountered error 1213', 0);
+
+        self::assertSame(
+            ErrorType::Transient,
+            $this->classifier->classify($e),
+            'Should detect transient issue by code inside message when driver code is unavailable'
+        );
+    }
+
+    #[Test]
+    public function codeSubstringShouldNotMatchLargerNumber_insideHeuristic(): void
+    {
+        // Use PDOException with code 0 so extractErrorInfo() keeps driverCode as null
+        $e = new PDOException('Arbitrary processing error 12132', 0);
+
+        // No other signals, and 1213 is only a substring -> expect Fatal
+        self::assertSame(
+            ErrorType::Fatal,
+            $this->classifier->classify($e),
+            'Should not match when code is part of a larger number'
+        );
+    }
+
+    #[Test]
     public function connectionByMessageHeuristicsWithoutCodes(): void
     {
         $cases = [

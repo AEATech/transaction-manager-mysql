@@ -161,7 +161,10 @@ class MySQLErrorClassifier implements ErrorClassifierInterface
         // Fall back to Exception code if helpful
         $code = $e->getCode();
 
-        if ($driverCode === null && is_int($code)) {
+        // Only promote a non-zero integer code to driver code. In PHP exceptions, code 0 typically
+        // means "no specific code" and should not suppress message-based heuristics that rely on
+        // $driverCode being null.
+        if ($driverCode === null && is_int($code) && $code !== 0) {
             $driverCode = $code;
         }
 
