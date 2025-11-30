@@ -6,7 +6,7 @@ Lightweight module for generating safe and efficient MySQL statements:
 - INSERT ... ON DUPLICATE KEY UPDATE (UPSERT)
 
 This package integrates with the core `aeatech/transaction-manager-core` and can be used with the Doctrine DBAL adapter (`aeatech/transaction-manager-doctrine-adapter`).
-It builds SQL and parameters; execution and retries are handled by the core.
+It builds SQL and parameters; the core handles execution and retries.
 
 System requirements:
 - PHP >= 8.2
