@@ -13,7 +13,6 @@ use AEATech\TransactionManager\TransactionManager;
 use Doctrine\DBAL\Configuration;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
-use Doctrine\DBAL\Result;
 use PDO;
 use PHPUnit\Framework\TestCase;
 use Throwable;
