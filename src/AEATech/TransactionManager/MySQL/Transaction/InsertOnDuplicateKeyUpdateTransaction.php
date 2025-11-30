@@ -7,50 +7,66 @@ use AEATech\TransactionManager\MySQL\Internal\InsertValuesBuilder;
 use AEATech\TransactionManager\MySQL\Internal\MySQLQuoteIdentifierTrait;
 use AEATech\TransactionManager\Query;
 use AEATech\TransactionManager\TransactionInterface;
+use InvalidArgumentException;
 
-class InsertTransaction implements TransactionInterface
+/**
+ * Upsert by PK/UNIQUE: INSERT ... ON DUPLICATE KEY UPDATE col = VALUES(col), ...
+ */
+class InsertOnDuplicateKeyUpdateTransaction implements TransactionInterface
 {
     use MySQLQuoteIdentifierTrait;
 
     /**
      * @param InsertValuesBuilder $insertValuesBuilder
-     * @param string $tableName e.g. 'users'
+     * @param string $tableName
      * @param array<array<string, mixed>> $rows
-     *        [
-     *            ['name' => 'Alex', 'age' => 30],
-     *            ['name' => 'Bob', 'age' => 25],
-     *        ]
-     * @param array<string, int|string> $columnTypes column => Doctrine/DBAL type or PDO::PARAM_*
-     * @param InsertMode $insertMode
+     * @param string[] $updateColumns
+     * @param array<string, int|string> $columnTypes
      * @param bool $isIdempotent
      */
     public function __construct(
         private readonly InsertValuesBuilder $insertValuesBuilder,
         private readonly string $tableName,
         private readonly array $rows,
+        private readonly array $updateColumns,
         private readonly array $columnTypes = [],
-        private readonly InsertMode $insertMode = InsertMode::Regular,
         private readonly bool $isIdempotent = false,
     ) {
+        if ([] === $this->updateColumns) {
+            throw new InvalidArgumentException(
+                'InsertOnDuplicateKeyUpdateTransaction requires non-empty $updateColumns.'
+            );
+        }
     }
 
     public function build(): Query
     {
-        $insertKeyword = match ($this->insertMode) {
-            InsertMode::Regular => 'INSERT INTO',
-            InsertMode::Ignore  => 'INSERT IGNORE INTO',
-        };
-
         [$valuesSql, $params, $types, $columns] = $this->insertValuesBuilder->build($this->rows, $this->columnTypes);
+
+        $missing = array_diff($this->updateColumns, $columns);
+
+        if ([] !== $missing) {
+            throw new InvalidArgumentException(
+                'Update columns must exist in rows. Missing: ' . implode(', ', $missing)
+            );
+        }
 
         $quotedColumns = self::quoteIdentifiers($columns);
 
+        // ON DUPLICATE KEY UPDATE col1 = VALUES(col1), col2 = VALUES(col2) ...
+        $updateAssignments = [];
+
+        foreach ($this->updateColumns as $column) {
+            $quoted = self::quoteIdentifier($column);
+            $updateAssignments[] = sprintf('%s = VALUES(%s)', $quoted, $quoted);
+        }
+
         $sql = sprintf(
-            '%s %s (%s) VALUES %s',
-            $insertKeyword,
+            'INSERT INTO %s (%s) VALUES %s ON DUPLICATE KEY UPDATE %s',
             self::quoteIdentifier($this->tableName),
             implode(', ', $quotedColumns),
             $valuesSql,
+            implode(', ', $updateAssignments),
         );
 
         return new Query($sql, $params, $types);

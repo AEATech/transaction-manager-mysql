@@ -1,18 +1,20 @@
 <?php
 declare(strict_types=1);
 
-namespace AEATech\Test\TransactionManager\MySQL;
+namespace AEATech\Test\TransactionManager\MySQL\Transaction;
 
 use AEATech\TransactionManager\ErrorType;
 use AEATech\TransactionManager\MySQL\MySQLErrorClassifier;
 use Exception;
 use PDOException;
+use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use ReflectionProperty;
 use RuntimeException;
 use Throwable;
 
+#[CoversClass(MySQLErrorClassifier::class)]
 class MySQLErrorClassifierTest extends TestCase
 {
     private MySQLErrorClassifier $classifier;

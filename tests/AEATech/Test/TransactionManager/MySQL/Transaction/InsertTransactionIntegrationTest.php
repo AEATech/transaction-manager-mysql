@@ -1,14 +1,15 @@
 <?php
 declare(strict_types=1);
 
-namespace AEATech\Test\TransactionManager\MySQL;
+namespace AEATech\Test\TransactionManager\MySQL\Transaction;
 
 use AEATech\TransactionManager\DoctrineAdapter\DbalConnectionAdapter;
 use AEATech\TransactionManager\ExecutionPlanBuilder;
+use AEATech\TransactionManager\MySQL\Internal\InsertValuesBuilder;
 use AEATech\TransactionManager\MySQL\MySQLErrorClassifier;
+use AEATech\TransactionManager\MySQL\Transaction\InsertTransaction;
 use AEATech\TransactionManager\SystemSleeper;
 use AEATech\TransactionManager\TransactionManager;
-use AEATech\TransactionManager\MySQL\Transaction\InsertTransaction;
 use Doctrine\DBAL\Configuration;
 use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\DriverManager;
@@ -94,7 +95,7 @@ SQL
             'age' => ParameterType::INTEGER,
         ];
 
-        $tx = new InsertTransaction('tm_insert_test', $rows, $types, isIdempotent: true);
+        $tx = new InsertTransaction(new InsertValuesBuilder(), 'tm_insert_test', $rows, $types, isIdempotent: true);
 
         $result = $txManager->run($tx);
 

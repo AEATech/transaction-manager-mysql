@@ -12,4 +12,9 @@ trait MySQLQuoteIdentifierTrait
     {
         return '`' . str_replace('`', '``', $identifier) . '`';
     }
+
+    private static function quoteIdentifiers(array $identifiers): array
+    {
+        return array_map(static fn (string $identifier) => self::quoteIdentifier($identifier), $identifiers);
+    }
 }

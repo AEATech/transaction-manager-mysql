@@ -1,7 +1,7 @@
 <?php
 declare(strict_types=1);
 
-namespace AEATech\Test\TransactionManager\MySQL;
+namespace AEATech\Test\TransactionManager\MySQL\Transaction;
 
 use AEATech\TransactionManager\DoctrineAdapter\DbalConnectionAdapter;
 use AEATech\TransactionManager\ErrorType;
