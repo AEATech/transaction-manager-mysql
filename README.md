@@ -1,6 +1,6 @@
 # AEATech Transaction Manager – MySQL
 
-Lightweight module for generating safe and efficient MySQL INSERT statements:
+Lightweight module for generating safe and efficient MySQL statements:
 - INSERT
 - INSERT IGNORE
 - INSERT ... ON DUPLICATE KEY UPDATE (UPSERT)
