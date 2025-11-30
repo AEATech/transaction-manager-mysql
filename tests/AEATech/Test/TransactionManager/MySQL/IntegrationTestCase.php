@@ -3,7 +3,6 @@ declare(strict_types=1);
 
 namespace AEATech\Test\TransactionManager\MySQL;
 
-
 use AEATech\TransactionManager\DoctrineAdapter\DbalConnectionAdapter;
 use AEATech\TransactionManager\ExecutionPlanBuilder;
 use AEATech\TransactionManager\MySQL\MySQLErrorClassifier;
