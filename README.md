@@ -133,6 +133,21 @@ $tx = $txFactory->createInsertOnDuplicateKeyUpdate(
 $tm->run($tx, $options);
 ```
 
+### 4) Raw SQL transaction (`SqlTransaction`)
+
+In advanced scenarios you may want to execute a **custom SQL statement** that is not covered by the built-in MySQL transaction types.  
+For this purpose the library provides a low-level escape hatch:
+
+```php
+$tx = $txFactory->createSql(
+    sql: 'UPDATE users SET last_seen = NOW() WHERE id = :id',
+    params: [':id' => $userId],
+    types: ['id' => \PDO::PARAM_INT],
+    isIdempotent: true // set to true ONLY if retrying this SQL is 100% safe
+);
+$tm->run($tx, $options);
+```
+
 ## Parameters and types
 - rows: array of homogeneous associative arrays like `['column' => value, ...]`. All rows must have the same set of keys (columns).
 - columnTypes: `array<string, int|string>` — mapping `column => parameter type` (PDO::PARAM_*, `Doctrine\DBAL\ParameterType::*` or string type names supported by DBAL). Optional — DBAL will try to infer types.
