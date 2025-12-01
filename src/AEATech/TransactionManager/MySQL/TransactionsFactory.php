@@ -6,6 +6,7 @@ namespace AEATech\TransactionManager\MySQL;
 use AEATech\TransactionManager\MySQL\Transaction\InsertMode;
 use AEATech\TransactionManager\MySQL\Transaction\InsertOnDuplicateKeyUpdateTransactionFactory;
 use AEATech\TransactionManager\MySQL\Transaction\InsertTransactionFactory;
+use AEATech\TransactionManager\MySQL\Transaction\SqlTransaction;
 use AEATech\TransactionManager\TransactionInterface;
 use InvalidArgumentException;
 
@@ -299,5 +300,61 @@ class TransactionsFactory
             columnTypes: $columnTypes,
             isIdempotent: $isIdempotent
         );
+    }
+
+    /**
+     * Create a transaction that wraps *raw* SQL provided by the caller.
+     *
+     * This is an **escape hatch** for advanced use-cases where a strongly typed
+     * transaction (e.g. `createInsert*()`) is not available or not practical.
+     *
+     * **WARNING – use at your own risk:**
+     *
+     * - The Transaction Manager does **not** validate, normalize, or sanitize the SQL.
+     *   Whatever you pass here will be sent directly to the underlying connection.
+     * - It is the caller's responsibility to ensure that the SQL:
+     *   - matches the current database engine and schema;
+     *   - does not break the invariants of your application;
+     *   - does not introduce SQL injection or other security issues.
+     * - The `TransactionManager` will still wrap this statement in a database
+     *   transaction and apply retry logic according to the `isIdempotent` flag,
+     *   but it **cannot** know whether repeating this SQL is actually safe.
+     *
+     * Typical scenarios:
+     * - one-off maintenance or migration queries;
+     * - ad-hoc bulk updates that are easier to express as raw SQL;
+     * - integration cases where a higher-level transaction type does not yet exist.
+     *
+     * This method itself never throws `InvalidArgumentException`. Any issues with
+     * the SQL, parameters, or types will surface later when:
+     * - `Transaction::build()` is called by `TransactionManager`, or
+     * - the underlying driver/DBAL attempts to execute the query.
+     *
+     * @param string $sql Arbitrary SQL statement (typically a single DML statement
+     *                    such as `INSERT`, `UPDATE` or `DELETE`). Although the
+     *                    transaction manager is designed for write operations,
+     *                    nothing prevents you from executing `SELECT` here, but
+     *                    the library does not optimize for read-only workloads.
+     * @param array<int|string, mixed> $params
+     *        Positional (`[0 => ...]`) or named (`[':foo' => ...]`) parameters
+     *        compatible with the underlying DBAL/driver.
+     * @param array<int|string, int|string> $types
+     *        Optional parameter types, e.g., Doctrine DBAL type constants, or
+     *        `PDO::PARAM_*` values, depending on the adapter.
+     * @param bool $isIdempotent
+     *        Set this flag to `true` **only if** it is safe to re-execute the
+     *        SQL in case of a transient failure (e.g., lock wait timeout or
+     *        connection drop), and you are prepared to accept the side effects
+     *        of possible retries. Otherwise, keep it `false`.
+     *
+     * @return TransactionInterface
+     */
+    public function createSql(
+        string $sql,
+        array $params = [],
+        array $types = [],
+        bool $isIdempotent = false,
+    ): TransactionInterface {
+        return new SqlTransaction($sql, $params, $types, $isIdempotent);
     }
 }

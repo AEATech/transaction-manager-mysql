@@ -8,6 +8,7 @@ use AEATech\TransactionManager\MySQL\Transaction\InsertOnDuplicateKeyUpdateTrans
 use AEATech\TransactionManager\MySQL\Transaction\InsertOnDuplicateKeyUpdateTransactionFactory;
 use AEATech\TransactionManager\MySQL\Transaction\InsertTransaction;
 use AEATech\TransactionManager\MySQL\Transaction\InsertTransactionFactory;
+use AEATech\TransactionManager\MySQL\Transaction\SqlTransaction;
 use AEATech\TransactionManager\MySQL\TransactionsFactory;
 use Mockery as m;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
@@ -34,7 +35,7 @@ class TransactionsFactoryTest extends TestCase
     }
 
     #[Test]
-    public function createInsertDelegatesToInsertFactoryAndReturnsTransaction(): void
+    public function createInsert(): void
     {
         $rows = [['id' => 1, 'name' => 'A']];
         $tx = m::mock(InsertTransaction::class);
@@ -50,7 +51,7 @@ class TransactionsFactoryTest extends TestCase
     }
 
     #[Test]
-    public function createInsertIgnoreUsesIgnoreMode(): void
+    public function createInsertIgnore(): void
     {
         $rows = [['id' => 2, 'name' => 'B']];
         $tx = m::mock(InsertTransaction::class);
@@ -66,7 +67,7 @@ class TransactionsFactoryTest extends TestCase
     }
 
     #[Test]
-    public function createInsertOnDuplicateKeyUpdateDelegatesToUpsertFactory(): void
+    public function createInsertOnDuplicateKeyUpdate(): void
     {
         $rows = [['id' => 3, 'email' => 'x@example.com', 'name' => 'X']];
         $updateColumns = ['email', 'name'];
@@ -86,5 +87,19 @@ class TransactionsFactoryTest extends TestCase
         );
 
         self::assertSame($tx, $result);
+    }
+
+    #[Test]
+    public function createSql(): void
+    {
+        $sql = 's...';
+        $params = ['p...'];
+        $types = ['t...'];
+
+        $expected = new SqlTransaction($sql, $params, $types);
+
+        $sqlTransaction = $this->transactionsFactory->createSql($sql, $params, $types);
+
+        self::assertEquals($expected, $sqlTransaction);
     }
 }

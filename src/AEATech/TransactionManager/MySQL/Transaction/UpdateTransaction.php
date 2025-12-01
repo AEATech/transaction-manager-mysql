@@ -44,7 +44,7 @@ class UpdateTransaction implements TransactionInterface
         $updateSetParts = [];
 
         foreach ($this->columnsWithValuesForUpdate as $column => $value) {
-            $quotedColumn = $this->quoteIdentifier($column);
+            $quotedColumn = self::quoteIdentifier($column);
 
             $updateSetParts[] = sprintf('%s = ?', $quotedColumn);
 
