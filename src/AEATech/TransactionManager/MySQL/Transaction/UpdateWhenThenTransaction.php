@@ -32,14 +32,14 @@ class UpdateWhenThenTransaction implements TransactionInterface
             $updateDefinitions,
         ] = $this->definitionsBuilder->build($this->rows, $this->identifierColumn, $this->updateColumns);
 
-        $quotedIdentifierColumn = $this->quoteIdentifier($this->identifierColumn);
+        $quotedIdentifierColumn = self::quoteIdentifier($this->identifierColumn);
         $whenThenPart = sprintf('WHEN %s = ? THEN ?', $quotedIdentifierColumn);
         $params = [];
         $types = [];
         $setCaseParts = [];
 
         foreach ($updateDefinitions as $column => $values) {
-            $quotedColumn = $this->quoteIdentifier($column);
+            $quotedColumn = self::quoteIdentifier($column);
             $columnType = $this->updateColumnTypes[$column] ?? null;
 
             $whenThenParts = [];
@@ -71,7 +71,7 @@ class UpdateWhenThenTransaction implements TransactionInterface
 
         $sql = sprintf(
             'UPDATE %s SET %s WHERE %s IN (%s)',
-            $this->quoteIdentifier($this->tableName),
+            self::quoteIdentifier($this->tableName),
             implode(', ', $setCaseParts),
             $quotedIdentifierColumn,
             implode(', ', $placeholders),
