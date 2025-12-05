@@ -18,8 +18,8 @@
   "require": {
     "php": ">=8.2",
     "ext-pdo": "*",
-    "aeatech/transaction-manager-core": "^0.0.3",
-    "aeatech/transaction-manager-doctrine-adapter": "^0.0.1"
+    "aeatech/transaction-manager-core": "^0.0.6",
+    "aeatech/transaction-manager-doctrine-adapter": "^0.0.4"
   },
   "require-dev": {
     "mockery/mockery": "^1.6.10",
