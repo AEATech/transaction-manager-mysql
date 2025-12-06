@@ -4,8 +4,56 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "a6c0cd1bfc3dc2624f18306187f396c5",
+    "content-hash": "c16dc588b16be285cb41107bf21e78da",
     "packages": [
+        {
+            "name": "aeatech/transaction-manager-common-transactions",
+            "version": "0.0.2",
+            "source": {
+                "type": "git",
+                "url": "git@github.com:Shahelm/transaction-manager-common-transactions.git",
+                "reference": "9afb24f3659ee212d5fd128da38f3e019dd5c0bf"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/Shahelm/transaction-manager-common-transactions/zipball/9afb24f3659ee212d5fd128da38f3e019dd5c0bf",
+                "reference": "9afb24f3659ee212d5fd128da38f3e019dd5c0bf",
+                "shasum": ""
+            },
+            "require": {
+                "aeatech/transaction-manager-core": "^0.0.6",
+                "ext-pdo": "*",
+                "php": ">=8.2"
+            },
+            "require-dev": {
+                "mockery/mockery": "^1.6.10",
+                "phpunit/phpunit": "^11.5",
+                "roave/security-advisories": "dev-master"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "AEATech\\TransactionManager\\Transaction\\": "src/AEATech/TransactionManager/Transaction"
+                }
+            },
+            "autoload-dev": {
+                "psr-4": {
+                    "AEATech\\Test\\TransactionManager\\Transaction\\": "tests/AEATech/Test/TransactionManager/Transaction"
+                }
+            },
+            "archive": {
+                "exclude": [
+                    "/docker",
+                    "/tests",
+                    "/phpunit.xml"
+                ]
+            },
+            "license": [
+                "MIT"
+            ],
+            "description": "Contains reusable, dialect-independent SQL transaction implementations, identifier quoting abstraction, and shared builders used across MySQL, PostgreSQL, and future AEATech Transaction Manager adapters",
+            "time": "2025-12-06T14:36:35+00:00"
+        },
         {
             "name": "aeatech/transaction-manager-core",
             "version": "0.0.6",

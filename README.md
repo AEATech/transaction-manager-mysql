@@ -27,11 +27,18 @@ use AEATech\TransactionManager\DoctrineAdapter\DbalConnectionAdapter;
 use AEATech\TransactionManager\ExecutionPlanBuilder;
 use AEATech\TransactionManager\ExponentialBackoff;
 use AEATech\TransactionManager\IsolationLevel;
-use AEATech\TransactionManager\MySQL\Internal\InsertValuesBuilder;
+use AEATech\TransactionManager\MySQL\MySQLIdentifierQuoter;
+use AEATech\TransactionManager\Transaction\Internal\InsertValuesBuilder;
+use AEATech\TransactionManager\Transaction\Internal\UpdateWhenThenDefinitionsBuilder;
+use AEATech\TransactionManager\MySQL\Transaction\InsertIgnoreTransactionFactory;
 use AEATech\TransactionManager\MySQL\MySQLErrorClassifier;
 use AEATech\TransactionManager\MySQL\Transaction\InsertOnDuplicateKeyUpdateTransactionFactory;
+use AEATech\TransactionManager\MySQL\Transaction\DeleteWithLimitTransactionFactory;
 use AEATech\TransactionManager\MySQL\Transaction\InsertTransactionFactory;
 use AEATech\TransactionManager\MySQL\TransactionsFactory as MySqlTxFactory;
+use AEATech\TransactionManager\Transaction\DeleteTransactionFactory;
+use AEATech\TransactionManager\Transaction\UpdateTransactionFactory;
+use AEATech\TransactionManager\Transaction\UpdateWhenThenTransactionFactory;
 use AEATech\TransactionManager\RetryPolicy;
 use AEATech\TransactionManager\SystemSleeper;
 use AEATech\TransactionManager\TransactionManager;
@@ -50,15 +57,27 @@ $tm = new TransactionManager(
 );
 
 // 3) Create the MySQL transactions factory
+$quoter = new MySQLIdentifierQuoter();
 $insertValuesBuilder = new InsertValuesBuilder();
+$updateWhenThenDefs = new UpdateWhenThenDefinitionsBuilder();
 
 $txFactory = new MySqlTxFactory(
     insertTransactionFactory: new InsertTransactionFactory(
-        $insertValuesBuilder
+        $insertValuesBuilder,
+        $quoter,
+    ),
+    insertIgnoreTransactionFactory: new InsertIgnoreTransactionFactory(
+        $insertValuesBuilder,
+        $quoter,
     ),
     insertOnDuplicateKeyUpdateTransactionFactory: new InsertOnDuplicateKeyUpdateTransactionFactory(
-        $insertValuesBuilder
+        $insertValuesBuilder,
+        $quoter,
     ),
+    deleteTransactionFactory: new DeleteTransactionFactory($quoter),
+    deleteWithLimitTransactionFactory: new DeleteWithLimitTransactionFactory($quoter),
+    updateTransactionFactory: new UpdateTransactionFactory($quoter),
+    updateWhenThenTransactionFactory: new UpdateWhenThenTransactionFactory($updateWhenThenDefs, $quoter),
 );
 
 // 4) Example: regular INSERT
@@ -148,12 +167,92 @@ $tx = $txFactory->createSql(
 $tm->run($tx, $options);
 ```
 
+### 5) DELETE by identifiers
+Remove a set of rows by primary key (or another unique column).
+```php
+$tx = $txFactory->createDelete(
+    tableName: 'products',
+    identifierColumn: 'id',
+    identifierColumnType: \PDO::PARAM_INT,
+    identifiers: [101, 102, 103],
+    isIdempotent: true,
+);
+$tm->run($tx, $options);
+```
+
+### 6) DELETE with LIMIT (MySQL-specific)
+Cap the maximum number of deleted rows per statement.
+```php
+$tx = $txFactory->createDeleteWithLimit(
+    tableName: 'logs',
+    identifierColumn: 'id',
+    identifierColumnType: \PDO::PARAM_INT,
+    identifiers: range(1, 1000),
+    limit: 100, // delete up to 100 rows in one go
+    isIdempotent: true,
+);
+$tm->run($tx, $options);
+```
+
+### 7) UPDATE by identifiers
+Set the same values for all targeted rows by identifier list.
+```php
+$tx = $txFactory->createUpdate(
+    tableName: 'orders',
+    identifierColumn: 'id',
+    identifierColumnType: \PDO::PARAM_INT,
+    identifiers: [10, 11, 12],
+    columnsWithValuesForUpdate: [
+        'status' => 'archived',
+        'updated_at' => new \DateTimeImmutable(),
+    ],
+    columnTypes: [
+        'status' => \PDO::PARAM_STR,
+        // date/time types follow your DBAL config
+    ],
+    isIdempotent: true,
+);
+$tm->run($tx, $options);
+```
+
+### 8) UPDATE WHEN ... THEN (per-row values)
+Update multiple rows with different values per row using a single statement built with `CASE WHEN`.
+```php
+$tx = $txFactory->createUpdateWhenThen(
+    tableName: 'users',
+    rows: [
+        ['id' => 1, 'quota' => 100, 'plan' => 'basic'],
+        ['id' => 2, 'quota' => 250, 'plan' => 'pro'],
+    ],
+    identifierColumn: 'id',
+    identifierColumnType: \PDO::PARAM_INT,
+    updateColumns: ['quota', 'plan'],
+    updateColumnTypes: [
+        'quota' => \PDO::PARAM_INT,
+        'plan'  => \PDO::PARAM_STR,
+    ],
+    isIdempotent: true,
+);
+$tm->run($tx, $options);
+```
+
 ## Parameters and types
 - rows: array of homogeneous associative arrays like `['column' => value, ...]`. All rows must have the same set of keys (columns).
 - columnTypes: `array<string, int|string>` — mapping `column => parameter type` (PDO::PARAM_*, `Doctrine\DBAL\ParameterType::*` or string type names supported by DBAL). Optional — DBAL will try to infer types.
 - isIdempotent: a flag for the transaction manager indicating retry safety. Semantics depend on your retry policy:
   - false (default): a re-run may change the outcome (e.g., insert duplicates).
   - true: the statement is designed to be idempotent (e.g., UPSERT by a unique key), allowing the manager to apply more aggressive retries.
+
+Additional notes for delete/update:
+- identifierColumn / identifiers:
+  - Use a primary key or another unique column to avoid unintended data changes.
+  - Provide a non-empty array of scalar identifiers.
+- DELETE with LIMIT:
+  - `limit` must be a positive integer; not all provided identifiers may be deleted in one run.
+- UPDATE by identifiers:
+  - `columnTypes` apply to the columns in `SET` clause; the identifier type is provided separately via `identifierColumnType`.
+- UPDATE WHEN ... THEN:
+  - `rows` must include the identifier column and all columns listed in `updateColumns`.
 
 ## How it works
 - SQL and parameters are built inside transactions (`InsertTransaction`, `InsertOnDuplicateKeyUpdateTransaction`).
@@ -173,6 +272,12 @@ $tm->run($tx, $options);
   - For `createInsertOnDuplicateKeyUpdate`, a PRIMARY KEY or `UNIQUE` index must exist to detect conflicts. Columns from `updateColumns` must be present in each row.
 - INSERT IGNORE semantics:
   - MySQL may silently skip rows that violate constraints. This is often non-idempotent from a business perspective.
+- DELETE semantics:
+  - Deleting the same identifiers twice is typically idempotent (2nd run affects 0 rows), but consider triggers/cascades/side effects.
+- DELETE with LIMIT:
+  - Use for chunking large deletions; combine with application-side iteration for full cleanup.
+- UPDATE semantics:
+  - Ensure your `WHERE` criteria (identifiers) uniquely target intended rows. Consider idempotency of repeated updates.
 - Identifier quoting:
   - Pass names without backticks — the library quotes them automatically.
 - MySQL 5.7 vs 8.x:

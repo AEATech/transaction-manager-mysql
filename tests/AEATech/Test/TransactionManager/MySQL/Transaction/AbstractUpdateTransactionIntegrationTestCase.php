@@ -4,8 +4,9 @@ declare(strict_types=1);
 namespace AEATech\Test\TransactionManager\MySQL\Transaction;
 
 use AEATech\Test\TransactionManager\MySQL\IntegrationTestCase;
-use AEATech\TransactionManager\MySQL\Internal\InsertValuesBuilder;
-use AEATech\TransactionManager\MySQL\Transaction\InsertTransaction;
+use AEATech\TransactionManager\MySQL\MySQLIdentifierQuoter;
+use AEATech\TransactionManager\Transaction\InsertTransaction;
+use AEATech\TransactionManager\Transaction\Internal\InsertValuesBuilder;
 use Doctrine\DBAL\ParameterType;
 use Throwable;
 
@@ -60,16 +61,19 @@ abstract class AbstractUpdateTransactionIntegrationTestCase extends IntegrationT
         /**
          * Init state
          */
-        $initTransaction = new InsertTransaction(new InsertValuesBuilder(),self::TABLE_NAME, self::INIT_STATE);
+        $initTransaction = new InsertTransaction(
+            new InsertValuesBuilder(),
+            new MySQLIdentifierQuoter(),
+            self::TABLE_NAME,
+            self::INIT_STATE
+        );
+
         $affectedRows = $this->runTransaction($initTransaction);
+
         self::assertSame(count(self::INIT_STATE), $affectedRows);
     }
 
     /**
-     * @param array $expected
-     *
-     * @return void
-     *
      * @throws Throwable
      */
     protected static function assertState(array $expected): void

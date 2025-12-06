@@ -4,8 +4,9 @@ declare(strict_types=1);
 namespace AEATech\Test\TransactionManager\MySQL\Transaction;
 
 use AEATech\Test\TransactionManager\MySQL\IntegrationTestCase;
-use AEATech\TransactionManager\MySQL\Internal\InsertValuesBuilder;
+use AEATech\TransactionManager\MySQL\MySQLIdentifierQuoter;
 use AEATech\TransactionManager\MySQL\Transaction\InsertOnDuplicateKeyUpdateTransaction;
+use AEATech\TransactionManager\Transaction\Internal\InsertValuesBuilder;
 use Doctrine\DBAL\ParameterType;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;
@@ -56,6 +57,7 @@ SQL
 
         $tx = new InsertOnDuplicateKeyUpdateTransaction(
             new InsertValuesBuilder(),
+            new MySQLIdentifierQuoter(),
             'tm_upsert_test',
             $rows,
             ['name', 'age'],

@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace AEATech\Test\TransactionManager\MySQL\Transaction;
 
 use AEATech\TransactionManager\MySQL\MySQLIdentifierQuoter;
-use AEATech\TransactionManager\MySQL\Transaction\InsertOnDuplicateKeyUpdateTransactionFactory;
+use AEATech\TransactionManager\MySQL\Transaction\InsertIgnoreTransactionFactory;
 use AEATech\TransactionManager\Transaction\Internal\InsertValuesBuilder;
 use Mockery as m;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
@@ -13,20 +13,20 @@ use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 use Throwable;
 
-#[CoversClass(InsertOnDuplicateKeyUpdateTransactionFactory::class)]
-class InsertOnDuplicateKeyUpdateTransactionFactoryTest extends TestCase
+#[CoversClass(InsertIgnoreTransactionFactory::class)]
+class InsertIgnoreTransactionFactoryTest extends TestCase
 {
     use MockeryPHPUnitIntegration;
 
     private InsertValuesBuilder&m\MockInterface $insertValuesBuilder;
-    private InsertOnDuplicateKeyUpdateTransactionFactory $insertOnDuplicateKeyUpdateTransactionFactory;
+    private InsertIgnoreTransactionFactory $ignoreTransactionFactory;
 
     protected function setUp(): void
     {
         parent::setUp();
 
         $this->insertValuesBuilder = m::mock(InsertValuesBuilder::class);
-        $this->insertOnDuplicateKeyUpdateTransactionFactory = new InsertOnDuplicateKeyUpdateTransactionFactory(
+        $this->ignoreTransactionFactory = new InsertIgnoreTransactionFactory(
             $this->insertValuesBuilder,
             new MySQLIdentifierQuoter(),
         );
@@ -36,37 +36,30 @@ class InsertOnDuplicateKeyUpdateTransactionFactoryTest extends TestCase
      * @throws Throwable
      */
     #[Test]
-    public function factoryCreatesUpsertTransactionWithAssignments(): void
+    public function factory(): void
     {
         $rows = [
-            ['id' => 1, 'name' => 'Alex', 'email' => 'a@example.com'],
+            ['id' => 1, 'name' => 'Alex'],
         ];
 
         $this->insertValuesBuilder->shouldReceive('build')
             ->once()
             ->with($rows, ['id' => 1])
             ->andReturn([
-                '(?, ?, ?)',
-                [1, 'Alex', 'a@example.com'],
+                '(?, ?)',
+                [1, 'Alex'],
                 [0 => 1],
-                ['id', 'name', 'email'],
+                ['id', 'name'],
             ]);
 
-        $tx = $this->insertOnDuplicateKeyUpdateTransactionFactory->factory(
-            'users',
-            $rows,
-            ['name', 'email'],
-            ['id' => 1],
-            true
-        );
+        $tx = $this->ignoreTransactionFactory->factory('users', $rows, ['id' => 1], true);
 
         $q = $tx->build();
 
-        self::assertSame(
-            'INSERT INTO `users` (`id`, `name`, `email`) VALUES (?, ?, ?) ON DUPLICATE KEY UPDATE `name` = VALUES(`name`), `email` = VALUES(`email`)',
-            $q->sql
-        );
-        self::assertSame([1, 'Alex', 'a@example.com'], $q->params);
+        $expectedSql = 'INSERT IGNORE INTO `users` (`id`, `name`) VALUES (?, ?)';
+
+        self::assertSame($expectedSql, $q->sql);
+        self::assertSame([1, 'Alex'], $q->params);
         self::assertSame([0 => 1], $q->types);
         self::assertTrue($tx->isIdempotent());
     }

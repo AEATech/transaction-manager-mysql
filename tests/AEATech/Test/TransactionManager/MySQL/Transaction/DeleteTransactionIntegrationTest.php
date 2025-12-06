@@ -4,9 +4,10 @@ declare(strict_types=1);
 namespace AEATech\Test\TransactionManager\MySQL\Transaction;
 
 use AEATech\Test\TransactionManager\MySQL\IntegrationTestCase;
-use AEATech\TransactionManager\MySQL\Internal\InsertValuesBuilder;
-use AEATech\TransactionManager\MySQL\Transaction\DeleteTransaction;
-use AEATech\TransactionManager\MySQL\Transaction\InsertTransaction;
+use AEATech\TransactionManager\MySQL\MySQLIdentifierQuoter;
+use AEATech\TransactionManager\Transaction\DeleteTransaction;
+use AEATech\TransactionManager\Transaction\InsertTransaction;
+use AEATech\TransactionManager\Transaction\Internal\InsertValuesBuilder;
 use Doctrine\DBAL\ParameterType;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;
@@ -48,8 +49,17 @@ SQL
             ['id' => 4, 'name' => 'Mary', 'age' => 28],
         ];
 
-        $initTransaction = new InsertTransaction(new InsertValuesBuilder(),'tm_delete_test', $initState);
+        $mySQLIdentifierQuoter = new MySQLIdentifierQuoter();
+
+        $initTransaction = new InsertTransaction(
+            new InsertValuesBuilder(),
+            $mySQLIdentifierQuoter,
+            'tm_delete_test',
+            $initState
+        );
+
         $affectedRows = $this->runTransaction($initTransaction);
+
         self::assertSame(count($initState), $affectedRows);
 
         /**
@@ -66,12 +76,15 @@ SQL
         }
 
         $deleteTransaction = new DeleteTransaction(
+            $mySQLIdentifierQuoter,
             'tm_delete_test',
             'id',
             ParameterType::INTEGER,
             $identifiersForDelete
         );
+
         $affectedRows = $this->runTransaction($deleteTransaction);
+
         self::assertSame(count($identifiersForDelete), $affectedRows);
 
         $actual = self::db()

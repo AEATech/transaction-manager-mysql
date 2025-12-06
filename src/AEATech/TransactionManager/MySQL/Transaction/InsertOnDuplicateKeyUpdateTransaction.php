@@ -3,9 +3,9 @@ declare(strict_types=1);
 
 namespace AEATech\TransactionManager\MySQL\Transaction;
 
-use AEATech\TransactionManager\MySQL\Internal\InsertValuesBuilder;
-use AEATech\TransactionManager\MySQL\Internal\MySQLQuoteIdentifierTrait;
+use AEATech\TransactionManager\MySQL\MySQLIdentifierQuoter;
 use AEATech\TransactionManager\Query;
+use AEATech\TransactionManager\Transaction\Internal\InsertValuesBuilder;
 use AEATech\TransactionManager\TransactionInterface;
 use InvalidArgumentException;
 
@@ -14,10 +14,9 @@ use InvalidArgumentException;
  */
 class InsertOnDuplicateKeyUpdateTransaction implements TransactionInterface
 {
-    use MySQLQuoteIdentifierTrait;
-
     /**
      * @param InsertValuesBuilder $insertValuesBuilder
+     * @param MySQLIdentifierQuoter $quoter
      * @param string $tableName
      * @param array<array<string, mixed>> $rows
      * @param string[] $updateColumns
@@ -26,6 +25,7 @@ class InsertOnDuplicateKeyUpdateTransaction implements TransactionInterface
      */
     public function __construct(
         private readonly InsertValuesBuilder $insertValuesBuilder,
+        private readonly MySQLIdentifierQuoter $quoter,
         private readonly string $tableName,
         private readonly array $rows,
         private readonly array $updateColumns,
@@ -51,19 +51,19 @@ class InsertOnDuplicateKeyUpdateTransaction implements TransactionInterface
             );
         }
 
-        $quotedColumns = self::quoteIdentifiers($columns);
+        $quotedColumns = $this->quoter->quoteIdentifiers($columns);
 
         // ON DUPLICATE KEY UPDATE col1 = VALUES(col1), col2 = VALUES(col2) ...
         $updateAssignments = [];
 
         foreach ($this->updateColumns as $column) {
-            $quoted = self::quoteIdentifier($column);
+            $quoted = $this->quoter->quoteIdentifier($column);
             $updateAssignments[] = sprintf('%s = VALUES(%s)', $quoted, $quoted);
         }
 
         $sql = sprintf(
             'INSERT INTO %s (%s) VALUES %s ON DUPLICATE KEY UPDATE %s',
-            self::quoteIdentifier($this->tableName),
+            $this->quoter->quoteIdentifier($this->tableName),
             implode(', ', $quotedColumns),
             $valuesSql,
             implode(', ', $updateAssignments),

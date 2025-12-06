@@ -3,7 +3,8 @@ declare(strict_types=1);
 
 namespace AEATech\Test\TransactionManager\MySQL\Transaction;
 
-use AEATech\TransactionManager\MySQL\Transaction\UpdateTransaction;
+use AEATech\TransactionManager\MySQL\MySQLIdentifierQuoter;
+use AEATech\TransactionManager\Transaction\UpdateTransaction;
 use Doctrine\DBAL\ParameterType;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;
@@ -38,6 +39,7 @@ class UpdateTransactionIntegrationTest extends AbstractUpdateTransactionIntegrat
         }
 
         $updateTransaction = new UpdateTransaction(
+            new MySQLIdentifierQuoter(),
             self::TABLE_NAME,
             self::IDENTIFIER_COLUMN,
             ParameterType::INTEGER,

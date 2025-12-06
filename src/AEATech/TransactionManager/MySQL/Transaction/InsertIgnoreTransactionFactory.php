@@ -3,12 +3,14 @@ declare(strict_types=1);
 
 namespace AEATech\TransactionManager\MySQL\Transaction;
 
-use AEATech\TransactionManager\MySQL\Internal\InsertValuesBuilder;
+use AEATech\TransactionManager\MySQL\MySQLIdentifierQuoter;
+use AEATech\TransactionManager\Transaction\Internal\InsertValuesBuilder;
 
-class InsertTransactionFactory
+class InsertIgnoreTransactionFactory
 {
     public function __construct(
         private readonly InsertValuesBuilder $insertValuesBuilder,
+        private readonly MySQLIdentifierQuoter $quoter,
     ) {
     }
 
@@ -16,16 +18,15 @@ class InsertTransactionFactory
         string $tableName,
         array $rows,
         array $columnTypes = [],
-        InsertMode $insertMode = InsertMode::Regular,
         bool $isIdempotent = false,
-    ): InsertTransaction {
-        return new InsertTransaction(
+    ): InsertIgnoreTransaction {
+        return new InsertIgnoreTransaction(
             $this->insertValuesBuilder,
+            $this->quoter,
             $tableName,
             $rows,
             $columnTypes,
-            $insertMode,
-            $isIdempotent
+            $isIdempotent,
         );
     }
 }

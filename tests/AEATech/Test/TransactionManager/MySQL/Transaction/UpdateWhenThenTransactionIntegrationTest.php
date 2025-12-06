@@ -3,8 +3,9 @@ declare(strict_types=1);
 
 namespace AEATech\Test\TransactionManager\MySQL\Transaction;
 
-use AEATech\TransactionManager\MySQL\Internal\UpdateWhenThenDefinitionsBuilder;
-use AEATech\TransactionManager\MySQL\Transaction\UpdateWhenThenTransaction;
+use AEATech\TransactionManager\MySQL\MySQLIdentifierQuoter;
+use AEATech\TransactionManager\Transaction\Internal\UpdateWhenThenDefinitionsBuilder;
+use AEATech\TransactionManager\Transaction\UpdateWhenThenTransaction;
 use Doctrine\DBAL\ParameterType;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;
@@ -40,6 +41,7 @@ class UpdateWhenThenTransactionIntegrationTest extends AbstractUpdateTransaction
 
         $updateTransaction = new UpdateWhenThenTransaction(
             new UpdateWhenThenDefinitionsBuilder(),
+            new MySQLIdentifierQuoter(),
             self::TABLE_NAME,
             $rows,
             self::IDENTIFIER_COLUMN,

@@ -5,7 +5,7 @@ namespace AEATech\Test\TransactionManager\MySQL\Transaction;
 
 use AEATech\Test\TransactionManager\MySQL\IntegrationTestCase;
 use AEATech\TransactionManager\MySQL\MySQLIdentifierQuoter;
-use AEATech\TransactionManager\Transaction\InsertTransaction;
+use AEATech\TransactionManager\MySQL\Transaction\InsertIgnoreTransaction;
 use AEATech\TransactionManager\Transaction\Internal\InsertValuesBuilder;
 use Doctrine\DBAL\ParameterType;
 use PHPUnit\Framework\Attributes\CoversClass;
@@ -14,8 +14,8 @@ use PHPUnit\Framework\Attributes\Test;
 use Throwable;
 
 #[Group('integration')]
-#[CoversClass(InsertTransaction::class)]
-class InsertTransactionIntegrationTest extends IntegrationTestCase
+#[CoversClass(InsertIgnoreTransaction::class)]
+class InsertIgnoreTransactionIntegrationTest extends IntegrationTestCase
 {
     protected function setUp(): void
     {
@@ -23,10 +23,9 @@ class InsertTransactionIntegrationTest extends IntegrationTestCase
 
         self::db()->executeStatement(
             <<<'SQL'
-CREATE TABLE tm_insert_test (
+CREATE TABLE tm_insert_ignore_test (
     id INT PRIMARY KEY,
-    name VARCHAR(64) NOT NULL,
-    age INT NOT NULL
+    name VARCHAR(64) NOT NULL
 ) ENGINE=InnoDB
 SQL
         );
@@ -36,44 +35,41 @@ SQL
      * @throws Throwable
      */
     #[Test]
-    public function insertsMultipleRowsSuccessfully(): void
+    public function insertIgnoreSkipsDuplicates(): void
     {
-        $expected = [
-            [
-                'id'   => 1,
-                'name' => 'Alex',
-                'age'  => 30
-            ],
-            [
-                'id'   => 2,
-                'name' => 'Bob',
-                'age'  => 25
-            ],
+        $rows = [
+            ['id' => 1, 'name' => 'Alex'],
+            ['id' => 2, 'name' => 'Bob'],
+            ['id' => 1, 'name' => 'Alex'], // duplicate PK
         ];
-
-        $rows = $expected;
 
         $types = [
             'id' => ParameterType::INTEGER,
             'name' => ParameterType::STRING,
-            'age' => ParameterType::INTEGER,
         ];
 
-        $tx = new InsertTransaction(
+        $tx = new InsertIgnoreTransaction(
             new InsertValuesBuilder(),
             new MySQLIdentifierQuoter(),
-            'tm_insert_test',
+            'tm_insert_ignore_test',
             $rows,
-            $types
+            $types,
+            false,
         );
 
         $affectedRows = $this->runTransaction($tx);
 
+        // Two unique rows inserted, one duplicate ignored
         self::assertSame(2, $affectedRows);
 
         $actual = self::db()
-            ->executeQuery('SELECT id, name, age FROM tm_insert_test ORDER BY id')
+            ->executeQuery('SELECT id, name FROM tm_insert_ignore_test ORDER BY id')
             ->fetchAllAssociative();
+
+        $expected = [
+            ['id' => 1, 'name' => 'Alex'],
+            ['id' => 2, 'name' => 'Bob'],
+        ];
 
         self::assertSame($expected, $actual);
     }

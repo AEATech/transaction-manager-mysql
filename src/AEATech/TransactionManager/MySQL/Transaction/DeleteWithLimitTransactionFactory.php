@@ -3,22 +3,30 @@ declare(strict_types=1);
 
 namespace AEATech\TransactionManager\MySQL\Transaction;
 
-use Doctrine\DBAL\ParameterType;
+use AEATech\TransactionManager\MySQL\MySQLIdentifierQuoter;
 
-class DeleteTransactionFactory
+class DeleteWithLimitTransactionFactory
 {
+    public function __construct(
+        private readonly MySQLIdentifierQuoter $quoter,
+    ) {
+    }
+
     public function factory(
         string $tableName,
         string $identifierColumn,
-        int|ParameterType $identifierColumnType,
+        mixed $identifierColumnType,
         array $identifiers,
+        int $limit,
         bool $isIdempotent = true,
-    ): DeleteTransaction {
-        return new DeleteTransaction(
+    ): DeleteWithLimitTransaction {
+        return new DeleteWithLimitTransaction(
+            $this->quoter,
             $tableName,
             $identifierColumn,
             $identifierColumnType,
             $identifiers,
+            $limit,
             $isIdempotent
         );
     }

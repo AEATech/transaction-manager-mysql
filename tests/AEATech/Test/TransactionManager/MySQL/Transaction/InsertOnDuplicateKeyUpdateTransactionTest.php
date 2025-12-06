@@ -3,8 +3,9 @@ declare(strict_types=1);
 
 namespace AEATech\Test\TransactionManager\MySQL\Transaction;
 
-use AEATech\TransactionManager\MySQL\Internal\InsertValuesBuilder;
+use AEATech\TransactionManager\MySQL\MySQLIdentifierQuoter;
 use AEATech\TransactionManager\MySQL\Transaction\InsertOnDuplicateKeyUpdateTransaction;
+use AEATech\TransactionManager\Transaction\Internal\InsertValuesBuilder;
 use InvalidArgumentException;
 use Mockery as m;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
@@ -20,11 +21,14 @@ class InsertOnDuplicateKeyUpdateTransactionTest extends TestCase
     use MockeryPHPUnitIntegration;
 
     private InsertValuesBuilder&m\MockInterface $insertValuesBuilder;
+    private MySQLIdentifierQuoter $quoter;
 
     protected function setUp(): void
     {
         parent::setUp();
+
         $this->insertValuesBuilder = m::mock(InsertValuesBuilder::class);
+        $this->quoter = new MySQLIdentifierQuoter();
     }
 
     /**
@@ -50,6 +54,7 @@ class InsertOnDuplicateKeyUpdateTransactionTest extends TestCase
 
         $tx = new InsertOnDuplicateKeyUpdateTransaction(
             $this->insertValuesBuilder,
+            $this->quoter,
             'users',
             $rows,
             ['na`me'],
@@ -78,6 +83,7 @@ class InsertOnDuplicateKeyUpdateTransactionTest extends TestCase
 
         new InsertOnDuplicateKeyUpdateTransaction(
             $this->insertValuesBuilder,
+            $this->quoter,
             't',
             [['a' => 1]],
             [],
@@ -106,6 +112,7 @@ class InsertOnDuplicateKeyUpdateTransactionTest extends TestCase
 
         $tx = new InsertOnDuplicateKeyUpdateTransaction(
             $this->insertValuesBuilder,
+            $this->quoter,
             't',
             $rows,
             ['name'],
@@ -127,6 +134,7 @@ class InsertOnDuplicateKeyUpdateTransactionTest extends TestCase
 
         $tx = new InsertOnDuplicateKeyUpdateTransaction(
             $this->insertValuesBuilder,
+            $this->quoter,
             't',
             $rows,
             ['a'],
