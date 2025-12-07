@@ -3,17 +3,9 @@ declare(strict_types=1);
 
 namespace AEATech\TransactionManager\MySQL;
 
-use AEATech\TransactionManager\ErrorClassifierInterface;
-use AEATech\TransactionManager\ErrorType;
-use PDOException;
-use Throwable;
+use AEATech\TransactionManager\DatabaseErrorHeuristicsInterface;
 
-/**
- * Classifies MySQL-related errors into Connection / Transient / Fatal
- * using SQLSTATE, driver error codes and message heuristics.
- * Connection issues take precedence over transient ones.
- */
-class MySQLErrorClassifier implements ErrorClassifierInterface
+class MySQLErrorHeuristics implements DatabaseErrorHeuristicsInterface
 {
     public const DEFAULT_SQLSTATE_CONNECTION_PREFIXES = ['08'];
     public const DEFAULT_CONNECTION_ERROR_CODES = [2002, 2006, 2013, 4031];
@@ -21,7 +13,6 @@ class MySQLErrorClassifier implements ErrorClassifierInterface
         'server has gone away',
         // broaden common variants observed across PHP/MySQL/DBAL versions
         'has gone away',
-        'gone away',
         'lost connection to mysql server',
         'while sending query packet',
         'error while sending query',
@@ -100,92 +91,7 @@ class MySQLErrorClassifier implements ErrorClassifierInterface
         $this->transientMsgNeedles = $transientMsgNeedles ?? self::DEFAULT_TRANSIENT_MESSAGE_SUBSTRINGS;
     }
 
-    public function classify(Throwable $e): ErrorType
-    {
-        // Walk the exception chain from the original to the root cause
-        $chain = [];
-        $cur = $e;
-
-        while ($cur) {
-            $chain[] = $cur;
-            $cur = $cur->getPrevious();
-        }
-
-        // Inspect from the deepest cause first
-        for ($i = count($chain) - 1; $i >= 0; $i--) {
-            $ex = $chain[$i];
-
-            [$sqlState, $driverCode, $message] = $this->extractErrorInfo($ex);
-
-            // 1) Connection-level issues
-            if ($this->isConnectionIssue($sqlState, $driverCode, $message)) {
-                return ErrorType::Connection;
-            }
-
-            // 2) Transient (retryable) issues
-            if ($this->isTransientIssue($sqlState, $driverCode, $message)) {
-                return ErrorType::Transient;
-            }
-        }
-
-        // 3) Fallback: treat as fatal
-        return ErrorType::Fatal;
-    }
-
-    /**
-     * @return array{
-     *     0: ?string,
-     *     1: ?int,
-     *     2: string
-     * }
-     */
-    private function extractErrorInfo(Throwable $e): array
-    {
-        // Try to read SQLSTATE and driver code from PDOException if available
-        $sqlState = null;
-        $driverCode = null;
-
-        // PDOException exposes public $errorInfo = [sqlstate, driverCode, driverMessage]
-        if ($e instanceof PDOException) {
-            $errorInfo = $e->errorInfo ?? null;
-
-            if (is_array($errorInfo) && isset($errorInfo[0])) {
-                $sqlState = is_string($errorInfo[0]) ? $errorInfo[0] : null;
-            }
-
-            if (is_array($errorInfo) && isset($errorInfo[1]) && is_numeric($errorInfo[1])) {
-                $driverCode = (int)$errorInfo[1];
-            }
-        }
-
-        // Fall back to Exception code if helpful
-        $code = $e->getCode();
-
-        // Only promote a non-zero integer code to driver code. In PHP exceptions, code 0 typically
-        // means "no specific code" and should not suppress message-based heuristics that rely on
-        // $driverCode being null.
-        if ($driverCode === null && is_int($code) && $code !== 0) {
-            $driverCode = $code;
-        }
-
-        if ($sqlState === null && is_string($code) && strlen($code) >= 5) {
-            $sqlState = substr($code, 0, 5);
-        }
-
-        // Doctrine DBAL exceptions may provide methods depending on installed version.
-        // Avoid hard dependency: probe reflectively when present.
-        if ($sqlState === null && method_exists($e, 'getSQLState')) {
-            $state = $e->getSQLState();
-
-            if (is_string($state) && $state !== '') {
-                $sqlState = $state;
-            }
-        }
-
-        return [$sqlState, $driverCode, $e->getMessage()];
-    }
-
-    private function isConnectionIssue(?string $sqlState, ?int $driverCode, string $message): bool
+    public function isConnectionIssue(?string $sqlState, ?int $driverCode, string $message): bool
     {
         $msg = strtolower($message);
 
@@ -218,7 +124,7 @@ class MySQLErrorClassifier implements ErrorClassifierInterface
         return false;
     }
 
-    private function isTransientIssue(?string $sqlState, ?int $driverCode, string $message): bool
+    public function isTransientIssue(?string $sqlState, ?int $driverCode, string $message): bool
     {
         $msg = strtolower($message);
 

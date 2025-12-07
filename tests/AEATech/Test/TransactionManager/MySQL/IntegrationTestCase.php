@@ -5,7 +5,8 @@ namespace AEATech\Test\TransactionManager\MySQL;
 
 use AEATech\TransactionManager\DoctrineAdapter\DbalConnectionAdapter;
 use AEATech\TransactionManager\ExecutionPlanBuilder;
-use AEATech\TransactionManager\MySQL\MySQLErrorClassifier;
+use AEATech\TransactionManager\GenericErrorClassifier;
+use AEATech\TransactionManager\MySQL\MySQLErrorHeuristics;
 use AEATech\TransactionManager\SystemSleeper;
 use AEATech\TransactionManager\TransactionInterface;
 use AEATech\TransactionManager\TransactionManager;
@@ -35,7 +36,7 @@ abstract class IntegrationTestCase extends TestCase
         self::$tm = new TransactionManager(
             new ExecutionPlanBuilder(),
             self::$adapter,
-            new MySQLErrorClassifier(),
+            new GenericErrorClassifier(new MySQLErrorHeuristics()),
             new SystemSleeper(),
         );
     }
@@ -97,7 +98,7 @@ abstract class IntegrationTestCase extends TestCase
         return new TransactionManager(
             new ExecutionPlanBuilder(),
             self::makeAdapter($overrideParams),
-            new MySQLErrorClassifier(),
+            new GenericErrorClassifier(new MySQLErrorHeuristics()),
             new SystemSleeper(),
         );
     }
@@ -165,7 +166,7 @@ abstract class IntegrationTestCase extends TestCase
             self::$tm = new TransactionManager(
                 new ExecutionPlanBuilder(),
                 self::adapter(),
-                new MySQLErrorClassifier(),
+                new GenericErrorClassifier(new MySQLErrorHeuristics()),
                 new SystemSleeper(),
             );
         }

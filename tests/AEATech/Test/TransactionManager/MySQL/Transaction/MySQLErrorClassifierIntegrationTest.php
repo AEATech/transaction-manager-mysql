@@ -5,7 +5,8 @@ namespace AEATech\Test\TransactionManager\MySQL\Transaction;
 
 use AEATech\Test\TransactionManager\MySQL\IntegrationTestCase;
 use AEATech\TransactionManager\ErrorType;
-use AEATech\TransactionManager\MySQL\MySQLErrorClassifier;
+use AEATech\TransactionManager\GenericErrorClassifier;
+use AEATech\TransactionManager\MySQL\MySQLErrorHeuristics;
 use PDOException;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;
@@ -20,16 +21,17 @@ use Throwable;
  * - real InnoDB deadlocks (both SQLSTATE 40001 and true concurrent deadlock).
  */
 #[Group('integration')]
-#[CoversClass(MySQLErrorClassifier::class)]
+#[CoversClass(GenericErrorClassifier::class)]
+#[CoversClass(MySQLErrorHeuristics::class)]
 class MySQLErrorClassifierIntegrationTest extends IntegrationTestCase
 {
-    private MySQLErrorClassifier $classifier;
+    private GenericErrorClassifier $classifier;
 
     protected function setUp(): void
     {
         parent::setUp();
 
-        $this->classifier = new MySQLErrorClassifier();
+        $this->classifier = new GenericErrorClassifier(new MySQLErrorHeuristics());
 
         self::db()->executeStatement(
             <<<'SQL'

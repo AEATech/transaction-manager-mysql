@@ -166,8 +166,7 @@ class TransactionsFactoryTest extends TestCase
             'users',
             'id',
             1,
-            [1, 2, 3],
-            true
+            [1, 2, 3]
         );
 
         self::assertSame($tx, $result);
