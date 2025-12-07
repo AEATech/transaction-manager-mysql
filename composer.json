@@ -1,11 +1,11 @@
 {
-  "name": "aeatech/transaction-manager-mysql",
-  "description": "MySQL dialect layer for AEATech Transaction Manager, providing MySQL-specific SQL behavior and extensions not covered by the core or common packages.",
-  "license": "MIT",
-  "type": "library",
-  "config": {
-    "sort-packages": true
-  },
+    "name": "aeatech/transaction-manager-mysql",
+    "description": "MySQL dialect layer for AEATech Transaction Manager, providing MySQL-specific SQL behavior and extensions not covered by the core or common packages.",
+    "license": "MIT",
+    "type": "library",
+    "config": {
+        "sort-packages": true
+    },
     "repositories": [
         {
             "type": "vcs",
@@ -20,33 +20,42 @@
             "url": "git@github.com:Shahelm/transaction-manager-common-transactions.git"
         }
     ],
-  "require": {
-    "php": ">=8.2",
-    "ext-pdo": "*",
-    "aeatech/transaction-manager-common-transactions": "^0.1.0",
-    "aeatech/transaction-manager-core": "^0.1.0",
-    "aeatech/transaction-manager-doctrine-adapter": "^0.1.0"
-  },
-  "require-dev": {
-    "mockery/mockery": "^1.6.10",
-    "phpunit/phpunit": "^11.5",
-    "roave/security-advisories": "dev-master"
-  },
-  "autoload": {
-    "psr-4": {
-      "AEATech\\TransactionManager\\MySQL\\": "src/AEATech/TransactionManager/MySQL"
-    }
-  },
-  "autoload-dev": {
-    "psr-4": {
-       "AEATech\\Test\\TransactionManager\\MySQL\\": "tests/AEATech/Test/TransactionManager/MySQL"
-    }
-  },
-  "archive": {
-    "exclude": [
-      "/docker",
-      "/tests",
-      "/phpunit.xml"
+    "require": {
+        "php": ">=8.2",
+        "ext-pdo": "*",
+        "aeatech/transaction-manager-common-transactions": "^0.1.0",
+        "aeatech/transaction-manager-core": "^0.1.0",
+        "aeatech/transaction-manager-doctrine-adapter": "^0.1.0"
+    },
+    "require-dev": {
+        "mockery/mockery": "^1.6.10",
+        "phpunit/phpunit": "^11.5",
+        "roave/security-advisories": "dev-master"
+    },
+    "autoload": {
+        "psr-4": {
+            "AEATech\\TransactionManager\\MySQL\\": "src/AEATech/TransactionManager/MySQL"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "AEATech\\Test\\TransactionManager\\MySQL\\": "tests/AEATech/Test/TransactionManager/MySQL"
+        }
+    },
+    "archive": {
+        "exclude": [
+            "/docker",
+            "/tests",
+            "/phpunit.xml"
+        ]
+    },
+    "keywords": [
+        "transaction",
+        "bulk-update",
+        "insert",
+        "update",
+        "delete",
+        "mysql-specific",
+        "database"
     ]
-  }
 }
