@@ -32,10 +32,9 @@ services:
         environment:
             MYSQL_HOST: mysql-test-5.7
         command: php -r "while (true) { sleep(86400); }"
-        working_dir: /app/packages/transaction-manager-mysql
+        working_dir: /app
         volumes:
-            # Mount the ENTIRE monorepo to /app
-            - ../../..:/app:rw
+            - ../../transaction-manager-mysql:/app:rw
             - /home/${USER}/.ssh:/home/${USER}/.ssh:ro
         extra_hosts:
             - 'host.docker.internal:host-gateway'
@@ -73,10 +72,9 @@ services:
         environment:
             MYSQL_HOST: mysql-test-8
         command: php -r "while (true) { sleep(86400); }"
-        working_dir: /app/packages/transaction-manager-mysql
+        working_dir: /app
         volumes:
-            # Mount the ENTIRE monorepo to /app
-            - ../../..:/app:rw
+            - ../../transaction-manager-mysql:/app:rw
             - /home/${USER}/.ssh:/home/${USER}/.ssh:ro
         extra_hosts:
             - 'host.docker.internal:host-gateway'
@@ -93,10 +91,9 @@ services:
         environment:
             MYSQL_HOST: mysql-test-8
         command: php -r "while (true) { sleep(86400); }"
-        working_dir: /app/packages/transaction-manager-mysql
+        working_dir: /app
         volumes:
-            # Mount the ENTIRE monorepo to /app
-            - ../../..:/app:rw
+            - ../../transaction-manager-mysql:/app:rw
             - /home/${USER}/.ssh:/home/${USER}/.ssh:ro
         extra_hosts:
             - 'host.docker.internal:host-gateway'
@@ -113,10 +110,9 @@ services:
         environment:
             MYSQL_HOST: mysql-test-8
         command: php -r "while (true) { sleep(86400); }"
-        working_dir: /app/packages/transaction-manager-mysql
+        working_dir: /app
         volumes:
-            # Mount the ENTIRE monorepo to /app
-            - ../../..:/app:rw
+            - ../../transaction-manager-mysql:/app:rw
             - /home/${USER}/.ssh:/home/${USER}/.ssh:ro
         extra_hosts:
             - 'host.docker.internal:host-gateway'
