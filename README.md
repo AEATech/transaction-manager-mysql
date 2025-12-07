@@ -292,7 +292,7 @@ Bring up services for your target PHP/MySQL versions and run PHPUnit inside the 
 Start services (PHP 8.2/8.3/8.4 with MySQL 8.0; and a dedicated PHP 8.2 image for MySQL 5.7):
 
 ```bash
-docker-compose -p aeatech-transaction-manager-mysql -f docker/docker-compose.yml up -d
+docker-compose -p aeatech-transaction-manager-mysql -f docker/docker-compose.yml up -d --build
 ```
 
 Install dependencies inside the PHP container (example for PHP 8.3):
