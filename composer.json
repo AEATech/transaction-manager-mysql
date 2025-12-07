@@ -2,6 +2,7 @@
   "name": "aeatech/transaction-manager-mysql",
   "description": "MySQL dialect layer for AEATech Transaction Manager, providing MySQL-specific SQL behavior and extensions not covered by the core or common packages.",
   "license": "MIT",
+  "type": "library",
   "config": {
     "sort-packages": true
   },
