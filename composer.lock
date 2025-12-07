@@ -4,24 +4,24 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "887d4ecdd551dc20b490d6bacee52cbc",
+    "content-hash": "91fb2dc3b54221d433b813518e904a7a",
     "packages": [
         {
             "name": "aeatech/transaction-manager-common-transactions",
-            "version": "0.1.0",
+            "version": "dev-main",
             "source": {
                 "type": "git",
                 "url": "git@github.com:Shahelm/transaction-manager-common-transactions.git",
-                "reference": "019bea098d14fe29983f37ee18e231438916675b"
+                "reference": "54b4485241b3bbb5d5eea11fe88a80d1983c078f"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Shahelm/transaction-manager-common-transactions/zipball/019bea098d14fe29983f37ee18e231438916675b",
-                "reference": "019bea098d14fe29983f37ee18e231438916675b",
+                "url": "https://api.github.com/repos/Shahelm/transaction-manager-common-transactions/zipball/54b4485241b3bbb5d5eea11fe88a80d1983c078f",
+                "reference": "54b4485241b3bbb5d5eea11fe88a80d1983c078f",
                 "shasum": ""
             },
             "require": {
-                "aeatech/transaction-manager-core": "^0.1.0",
+                "aeatech/transaction-manager-core": "dev-main",
                 "ext-pdo": "*",
                 "php": ">=8.2"
             },
@@ -30,6 +30,7 @@
                 "phpunit/phpunit": "^11.5",
                 "roave/security-advisories": "dev-master"
             },
+            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-4": {
@@ -52,20 +53,27 @@
                 "MIT"
             ],
             "description": "Contains reusable, dialect-independent SQL transaction implementations, identifier quoting abstraction, and shared builders used across MySQL, PostgreSQL, and future AEATech Transaction Manager adapters",
-            "time": "2025-12-06T22:05:36+00:00"
+            "keywords": [
+                "aeatech",
+                "bulk-update",
+                "sql",
+                "transaction",
+                "upsert"
+            ],
+            "time": "2025-12-07T15:23:23+00:00"
         },
         {
             "name": "aeatech/transaction-manager-core",
-            "version": "0.1.0",
+            "version": "dev-main",
             "source": {
                 "type": "git",
                 "url": "git@github.com:Shahelm/transaction-manager-core.git",
-                "reference": "d1157f1b4762ca241ca6205b09e4432c9a70c0ed"
+                "reference": "bcfb17a7909b523890ad146678be01b278b01679"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Shahelm/transaction-manager-core/zipball/d1157f1b4762ca241ca6205b09e4432c9a70c0ed",
-                "reference": "d1157f1b4762ca241ca6205b09e4432c9a70c0ed",
+                "url": "https://api.github.com/repos/Shahelm/transaction-manager-core/zipball/bcfb17a7909b523890ad146678be01b278b01679",
+                "reference": "bcfb17a7909b523890ad146678be01b278b01679",
                 "shasum": ""
             },
             "require": {
@@ -77,6 +85,7 @@
                 "phpunit/phpunit": "^11.5",
                 "roave/security-advisories": "dev-master"
             },
+            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-4": {
@@ -99,24 +108,30 @@
                 "MIT"
             ],
             "description": "Transaction manager core",
-            "time": "2025-12-06T21:48:58+00:00"
+            "keywords": [
+                "database",
+                "sql",
+                "transaction",
+                "transaction-manager"
+            ],
+            "time": "2025-12-07T14:31:53+00:00"
         },
         {
             "name": "aeatech/transaction-manager-doctrine-adapter",
-            "version": "0.1.0",
+            "version": "dev-main",
             "source": {
                 "type": "git",
                 "url": "git@github.com:Shahelm/transaction-manager-doctrine-adapter.git",
-                "reference": "552b1102dee068c225cc64f89e7d3ab43fc99db2"
+                "reference": "f3f287c8c530c9ffcc62e09fdbb22cb628673f47"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Shahelm/transaction-manager-doctrine-adapter/zipball/552b1102dee068c225cc64f89e7d3ab43fc99db2",
-                "reference": "552b1102dee068c225cc64f89e7d3ab43fc99db2",
+                "url": "https://api.github.com/repos/Shahelm/transaction-manager-doctrine-adapter/zipball/f3f287c8c530c9ffcc62e09fdbb22cb628673f47",
+                "reference": "f3f287c8c530c9ffcc62e09fdbb22cb628673f47",
                 "shasum": ""
             },
             "require": {
-                "aeatech/transaction-manager-core": "^0.1.0",
+                "aeatech/transaction-manager-core": "dev-main",
                 "doctrine/dbal": "^3.7 || ^4.0",
                 "php": ">=8.2"
             },
@@ -125,6 +140,7 @@
                 "phpunit/phpunit": "^11.5",
                 "roave/security-advisories": "dev-master"
             },
+            "default-branch": true,
             "type": "library",
             "autoload": {
                 "psr-4": {
@@ -147,7 +163,13 @@
                 "MIT"
             ],
             "description": "Implementation of the transaction manager connection with Doctrine",
-            "time": "2025-12-06T22:03:32+00:00"
+            "keywords": [
+                "database",
+                "doctrine-dbal",
+                "sql",
+                "transaction"
+            ],
+            "time": "2025-12-07T15:25:48+00:00"
         },
         {
             "name": "doctrine/dbal",
@@ -3308,6 +3330,9 @@
     "aliases": [],
     "minimum-stability": "stable",
     "stability-flags": {
+        "aeatech/transaction-manager-common-transactions": 20,
+        "aeatech/transaction-manager-core": 20,
+        "aeatech/transaction-manager-doctrine-adapter": 20,
         "roave/security-advisories": 20
     },
     "prefer-stable": false,
