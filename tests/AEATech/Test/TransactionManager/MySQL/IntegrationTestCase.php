@@ -3,7 +3,7 @@ declare(strict_types=1);
 
 namespace AEATech\Test\TransactionManager\MySQL;
 
-use AEATech\TransactionManager\DoctrineAdapter\DbalConnectionAdapter;
+use AEATech\TransactionManager\DoctrineAdapter\DbalMysqlConnectionAdapter;
 use AEATech\TransactionManager\ExecutionPlanBuilder;
 use AEATech\TransactionManager\GenericErrorClassifier;
 use AEATech\TransactionManager\MySQL\MySQLErrorHeuristics;
@@ -20,7 +20,7 @@ use Throwable;
 abstract class IntegrationTestCase extends TestCase
 {
     private static ?Connection $raw = null;
-    private static ?DbalConnectionAdapter $adapter = null;
+    private static ?DbalMysqlConnectionAdapter $adapter = null;
     private static ?TransactionManager $tm = null;
 
     /**
@@ -30,9 +30,8 @@ abstract class IntegrationTestCase extends TestCase
     public static function setUpBeforeClass(): void
     {
         // Build shared connection/adapter/txManager once per test class
-        $override = static::connectionParamsOverride();
-        self::$raw = self::makeDbalConnection($override);
-        self::$adapter = new DbalConnectionAdapter(self::$raw);
+        self::$raw = self::makeDbalConnection();
+        self::$adapter = self::makeAdapter(self::$raw);
         self::$tm = new TransactionManager(
             new ExecutionPlanBuilder(),
             self::$adapter,
@@ -55,11 +54,51 @@ abstract class IntegrationTestCase extends TestCase
     }
 
     /**
-     * Override in child to tweak connection options (e.g., port, timeouts).
+     * Universal DB reset: drop all tables in the current schema.
+     * Uses FOREIGN_KEY_CHECKS to safely drop in any order.
+     *
+     * @throws Throwable
      */
-    protected static function connectionParamsOverride(): array
+    protected function resetDatabase(): void
     {
-        return [];
+        $conn = self::db();
+
+        $tables = $conn->fetchFirstColumn(
+            "SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema = DATABASE()"
+        );
+
+        $conn->executeStatement('SET FOREIGN_KEY_CHECKS=0');
+
+        foreach ($tables as $table) {
+            $conn->executeStatement('DROP TABLE IF EXISTS `' . str_replace('`','``',$table).'`');
+        }
+
+        $conn->executeStatement('SET FOREIGN_KEY_CHECKS=1');
+    }
+
+    protected static function db(): Connection
+    {
+        return self::$raw;
+    }
+
+    protected static function adapter(): DbalMysqlConnectionAdapter
+    {
+        return self::$adapter;
+    }
+
+    protected static function tm(): TransactionManager
+    {
+        return self::$tm;
+    }
+
+    /**
+     * @throws Throwable
+     */
+    protected function runTransaction(
+        TransactionInterface $transaction,
+        TransactionInterface ...$nestedTransactions
+    ): int {
+        return self::tm()->run([$transaction, ...$nestedTransactions])->affectedRows;
     }
 
     /**
@@ -88,19 +127,9 @@ abstract class IntegrationTestCase extends TestCase
         return DriverManager::getConnection($params, new Configuration());
     }
 
-    protected static function makeAdapter(array $overrideParams = []): DbalConnectionAdapter
+    protected static function makeAdapter(Connection $connection): DbalMysqlConnectionAdapter
     {
-        return new DbalConnectionAdapter(self::makeDbalConnection($overrideParams));
-    }
-
-    protected static function makeTransactionManager(array $overrideParams = []): TransactionManager
-    {
-        return new TransactionManager(
-            new ExecutionPlanBuilder(),
-            self::makeAdapter($overrideParams),
-            new GenericErrorClassifier(new MySQLErrorHeuristics()),
-            new SystemSleeper(),
-        );
+        return new DbalMysqlConnectionAdapter($connection);
     }
 
     /**
@@ -115,72 +144,9 @@ abstract class IntegrationTestCase extends TestCase
                 // ignore
             }
         }
+
         self::$tm = null;
         self::$adapter = null;
         self::$raw = null;
-    }
-
-    /**
-     * Universal DB reset: drop all tables in the current schema.
-     * Uses FOREIGN_KEY_CHECKS to safely drop in any order.
-     *
-     * @throws Throwable
-     */
-    protected function resetDatabase(): void
-    {
-        $conn = self::db();
-
-        $tables = $conn->fetchFirstColumn(
-            "SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema = DATABASE()"
-        );
-
-        $conn->executeStatement('SET FOREIGN_KEY_CHECKS=0');
-
-        foreach ($tables as $table) {
-            $conn->executeStatement('DROP TABLE IF EXISTS `' . str_replace('`','``',$table).'`');
-        }
-
-        $conn->executeStatement('SET FOREIGN_KEY_CHECKS=1');
-    }
-
-    protected static function db(): Connection
-    {
-        if (!self::$raw) {
-            $override = static::connectionParamsOverride();
-            self::$raw = self::makeDbalConnection($override);
-        }
-        return self::$raw;
-    }
-
-    protected static function adapter(): DbalConnectionAdapter
-    {
-        if (!self::$adapter) {
-            self::$adapter = new DbalConnectionAdapter(self::db());
-        }
-        return self::$adapter;
-    }
-
-    protected static function tm(): TransactionManager
-    {
-        if (!self::$tm) {
-            self::$tm = new TransactionManager(
-                new ExecutionPlanBuilder(),
-                self::adapter(),
-                new GenericErrorClassifier(new MySQLErrorHeuristics()),
-                new SystemSleeper(),
-            );
-        }
-
-        return self::$tm;
-    }
-
-    /**
-     * @throws Throwable
-     */
-    protected function runTransaction(
-        TransactionInterface $transaction,
-        TransactionInterface ...$nestedTransactions
-    ): int {
-        return self::tm()->run([$transaction, ...$nestedTransactions])->affectedRows;
     }
 }

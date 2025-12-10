@@ -23,7 +23,7 @@ composer require aeatech/transaction-manager-mysql
 
 ```php
 <?php
-use AEATech\TransactionManager\DoctrineAdapter\DbalConnectionAdapter;
+use AEATech\TransactionManager\DoctrineAdapter\DbalMysqlConnectionAdapter;
 use AEATech\TransactionManager\ExecutionPlanBuilder;
 use AEATech\TransactionManager\ExponentialBackoff;
 use AEATech\TransactionManager\IsolationLevel;
@@ -46,7 +46,7 @@ use AEATech\TransactionManager\TxOptions;
 
 // 1) Create a connection adapter (Doctrine DBAL example):
 // $dbal = new Doctrine\DBAL\Connection(...);
-$conn = new DbalConnectionAdapter($dbal);
+$conn = new DbalMysqlConnectionAdapter($dbal);
 
 // 2) Configure the TransactionManager from the core:
 $tm = new TransactionManager(

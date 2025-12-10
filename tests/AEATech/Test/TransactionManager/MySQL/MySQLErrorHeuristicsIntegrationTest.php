@@ -6,6 +6,7 @@ namespace AEATech\Test\TransactionManager\MySQL;
 use AEATech\TransactionManager\ErrorType;
 use AEATech\TransactionManager\GenericErrorClassifier;
 use AEATech\TransactionManager\MySQL\MySQLErrorHeuristics;
+use AEATech\TransactionManager\TxOptions;
 use PDOException;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;
@@ -60,11 +61,11 @@ INSERT INTO tm_lock_test (id, val) VALUES (1, 0), (2, 0)
 SQL
         );
 
-        $adapter1 = self::makeAdapter();
-        $adapter2 = self::makeAdapter();
+        $adapter1 = self::makeAdapter(self::makeDbalConnection());
+        $adapter2 = self::makeAdapter(self::makeDbalConnection());
 
         // Keep a lock on row 1 via adapter2
-        $adapter2->beginTransaction();
+        $adapter2->beginTransactionWithOptions(new TxOptions());
 
         $adapter2->executeStatement(<<<'SQL'
 UPDATE tm_lock_test SET val = val + 1 WHERE id = 1
@@ -76,7 +77,7 @@ SQL
 SET SESSION innodb_lock_wait_timeout = 1
 SQL
 );
-        $adapter1->beginTransaction();
+        $adapter1->beginTransactionWithOptions(new TxOptions());
 
         $thrown = null;
 
@@ -109,12 +110,12 @@ SQL
     #[Test]
     public function connectionErrorOnInvalidPortIsConnection(): void
     {
-        $adapter = self::makeAdapter(['port' => 3307, 'connect_timeout' => 1]);
+        $adapter = self::makeAdapter(self::makeDbalConnection(['port' => 3307, 'connect_timeout' => 1]));
 
         $caught = null;
 
         try {
-            $adapter->beginTransaction();
+            $adapter->beginTransactionWithOptions(new TxOptions());
         } catch (Throwable $e) {
             $caught = $e;
 
@@ -138,7 +139,7 @@ SQL
         self::adapter()->executeStatement('SET SESSION wait_timeout = 1');
         self::adapter()->executeStatement('SET SESSION interactive_timeout = 1');
 
-        self::adapter()->beginTransaction();
+        self::adapter()->beginTransactionWithOptions(new TxOptions());
 
         // Sleep beyond wait_timeout to force the server to drop the connection
         sleep(2);
@@ -270,7 +271,7 @@ PHPCHILD;
 
         fclose($pipes[0]); // no stdin
 
-        self::adapter()->beginTransaction();
+        self::adapter()->beginTransactionWithOptions(new TxOptions());
 
         self::adapter()->executeStatement(<<<'SQL'
 UPDATE tm_lock_test SET val = val + 1 WHERE id = 1
