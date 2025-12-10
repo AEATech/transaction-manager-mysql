@@ -1,9 +1,8 @@
 <?php
 declare(strict_types=1);
 
-namespace AEATech\Test\TransactionManager\MySQL\Transaction;
+namespace AEATech\Test\TransactionManager\MySQL;
 
-use AEATech\Test\TransactionManager\MySQL\IntegrationTestCase;
 use AEATech\TransactionManager\ErrorType;
 use AEATech\TransactionManager\GenericErrorClassifier;
 use AEATech\TransactionManager\MySQL\MySQLErrorHeuristics;
@@ -14,7 +13,7 @@ use PHPUnit\Framework\Attributes\Test;
 use Throwable;
 
 /**
- * Integration tests that verify MySQLErrorClassifier against a real MySQL server:
+ * Integration tests that verify GenericErrorClassifier against a real MySQL server:
  * - lock wait timeouts
  * - connection failures
  * - server gone away
@@ -23,7 +22,7 @@ use Throwable;
 #[Group('integration')]
 #[CoversClass(GenericErrorClassifier::class)]
 #[CoversClass(MySQLErrorHeuristics::class)]
-class MySQLErrorClassifierIntegrationTest extends IntegrationTestCase
+class MySQLErrorHeuristicsIntegrationTest extends IntegrationTestCase
 {
     private GenericErrorClassifier $classifier;
 
