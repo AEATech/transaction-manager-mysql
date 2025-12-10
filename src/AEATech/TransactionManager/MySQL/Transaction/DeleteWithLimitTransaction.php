@@ -58,6 +58,6 @@ class DeleteWithLimitTransaction implements TransactionInterface
 
     public function isIdempotent(): bool
     {
-        return $this->isIdempotent ?? false;
+        return $this->isIdempotent;
     }
 }
