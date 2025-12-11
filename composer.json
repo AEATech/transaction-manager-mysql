@@ -24,10 +24,10 @@
         "php": ">=8.2",
         "ext-pdo": "*",
         "aeatech/transaction-manager-common-transactions": "dev-main",
-        "aeatech/transaction-manager-core": "dev-main",
-        "aeatech/transaction-manager-doctrine-adapter": "dev-main"
+        "aeatech/transaction-manager-core": "dev-main"
     },
     "require-dev": {
+        "aeatech/transaction-manager-doctrine-adapter": "dev-main",
         "mockery/mockery": "^1.6.10",
         "phpunit/phpunit": "^11.5",
         "roave/security-advisories": "dev-master"
