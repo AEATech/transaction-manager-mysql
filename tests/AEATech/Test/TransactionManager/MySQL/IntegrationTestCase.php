@@ -20,7 +20,6 @@ use Throwable;
 abstract class IntegrationTestCase extends TestCase
 {
     private static ?Connection $raw = null;
-    private static ?DbalMysqlConnectionAdapter $adapter = null;
     private static ?TransactionManager $tm = null;
 
     /**
@@ -29,12 +28,11 @@ abstract class IntegrationTestCase extends TestCase
      */
     public static function setUpBeforeClass(): void
     {
-        // Build shared connection/adapter/txManager once per test class
+        // Build shared connection/txManager once per test class
         self::$raw = self::makeDbalConnection();
-        self::$adapter = self::makeAdapter(self::$raw);
         self::$tm = new TransactionManager(
             new ExecutionPlanBuilder(),
-            self::$adapter,
+            new DbalMysqlConnectionAdapter(self::$raw),
             new GenericErrorClassifier(new MySQLErrorHeuristics()),
             new SystemSleeper(),
         );
@@ -51,44 +49,6 @@ abstract class IntegrationTestCase extends TestCase
         parent::setUp();
 
         $this->resetDatabase();
-    }
-
-    /**
-     * Universal DB reset: drop all tables in the current schema.
-     * Uses FOREIGN_KEY_CHECKS to safely drop in any order.
-     *
-     * @throws Throwable
-     */
-    protected function resetDatabase(): void
-    {
-        $conn = self::db();
-
-        $tables = $conn->fetchFirstColumn(
-            "SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema = DATABASE()"
-        );
-
-        $conn->executeStatement('SET FOREIGN_KEY_CHECKS=0');
-
-        foreach ($tables as $table) {
-            $conn->executeStatement('DROP TABLE IF EXISTS `' . str_replace('`','``',$table).'`');
-        }
-
-        $conn->executeStatement('SET FOREIGN_KEY_CHECKS=1');
-    }
-
-    protected static function db(): Connection
-    {
-        return self::$raw;
-    }
-
-    protected static function adapter(): DbalMysqlConnectionAdapter
-    {
-        return self::$adapter;
-    }
-
-    protected static function tm(): TransactionManager
-    {
-        return self::$tm;
     }
 
     /**
@@ -127,9 +87,37 @@ abstract class IntegrationTestCase extends TestCase
         return DriverManager::getConnection($params, new Configuration());
     }
 
-    protected static function makeAdapter(Connection $connection): DbalMysqlConnectionAdapter
+    /**
+     * Universal DB reset: drop all tables in the current schema.
+     * Uses FOREIGN_KEY_CHECKS to safely drop in any order.
+     *
+     * @throws Throwable
+     */
+    private function resetDatabase(): void
     {
-        return new DbalMysqlConnectionAdapter($connection);
+        $conn = self::db();
+
+        $tables = $conn->fetchFirstColumn(
+            "SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema = DATABASE()"
+        );
+
+        $conn->executeStatement('SET FOREIGN_KEY_CHECKS=0');
+
+        foreach ($tables as $table) {
+            $conn->executeStatement('DROP TABLE IF EXISTS `' . str_replace('`','``',$table).'`');
+        }
+
+        $conn->executeStatement('SET FOREIGN_KEY_CHECKS=1');
+    }
+
+    protected static function db(): Connection
+    {
+        return self::$raw;
+    }
+
+    protected static function tm(): TransactionManager
+    {
+        return self::$tm;
     }
 
     /**
@@ -146,7 +134,6 @@ abstract class IntegrationTestCase extends TestCase
         }
 
         self::$tm = null;
-        self::$adapter = null;
         self::$raw = null;
     }
 }

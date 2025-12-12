@@ -6,7 +6,6 @@ namespace AEATech\Test\TransactionManager\MySQL;
 use AEATech\TransactionManager\ErrorType;
 use AEATech\TransactionManager\GenericErrorClassifier;
 use AEATech\TransactionManager\MySQL\MySQLErrorHeuristics;
-use AEATech\TransactionManager\TxOptions;
 use PDOException;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;
@@ -61,28 +60,28 @@ INSERT INTO tm_lock_test (id, val) VALUES (1, 0), (2, 0)
 SQL
         );
 
-        $adapter1 = self::makeAdapter(self::makeDbalConnection());
-        $adapter2 = self::makeAdapter(self::makeDbalConnection());
+        $conn1 = self::makeDbalConnection();
+        $conn2 = self::makeDbalConnection();
 
-        // Keep a lock on row 1 via adapter2
-        $adapter2->beginTransactionWithOptions(new TxOptions());
+        // Keep a lock on row 1 via conn2
+        $conn2->beginTransaction();
 
-        $adapter2->executeStatement(<<<'SQL'
+        $conn2->executeStatement(<<<'SQL'
 UPDATE tm_lock_test SET val = val + 1 WHERE id = 1
 SQL
 );
 
         // Minimize wait timeout for victim session
-        $adapter1->executeStatement(<<<'SQL'
+        $conn1->executeStatement(<<<'SQL'
 SET SESSION innodb_lock_wait_timeout = 1
 SQL
 );
-        $adapter1->beginTransactionWithOptions(new TxOptions());
+        $conn1->beginTransaction();
 
         $thrown = null;
 
         try {
-            $adapter1->executeStatement(<<<'SQL'
+            $conn1->executeStatement(<<<'SQL'
 UPDATE tm_lock_test SET val = val + 1 WHERE id = 1
 SQL
 );
@@ -90,12 +89,12 @@ SQL
             $thrown = $e;
         } finally {
             try {
-                $adapter1->rollBack();
+                $conn1->rollBack();
             } catch (Throwable) {
             }
 
             try {
-                $adapter2->rollBack();
+                $conn2->rollBack();
             } catch (Throwable) {
             }
         }
@@ -110,12 +109,12 @@ SQL
     #[Test]
     public function connectionErrorOnInvalidPortIsConnection(): void
     {
-        $adapter = self::makeAdapter(self::makeDbalConnection(['port' => 3307, 'connect_timeout' => 1]));
+        $adapter = self::makeDbalConnection(['port' => 3307, 'connect_timeout' => 1]);
 
         $caught = null;
 
         try {
-            $adapter->beginTransactionWithOptions(new TxOptions());
+            $adapter->beginTransaction();
         } catch (Throwable $e) {
             $caught = $e;
 
@@ -136,10 +135,10 @@ SQL
     public function serverHasGoneAwayIsConnection(): void
     {
         // Shrink timeouts so that idle connection is dropped quickly
-        self::adapter()->executeStatement('SET SESSION wait_timeout = 1');
-        self::adapter()->executeStatement('SET SESSION interactive_timeout = 1');
+        self::db()->executeStatement('SET SESSION wait_timeout = 1');
+        self::db()->executeStatement('SET SESSION interactive_timeout = 1');
 
-        self::adapter()->beginTransactionWithOptions(new TxOptions());
+        self::db()->beginTransaction();
 
         // Sleep beyond wait_timeout to force the server to drop the connection
         sleep(2);
@@ -149,12 +148,12 @@ SQL
         try {
             // Any statement should now fail with "server has gone away"/lost connection
             // php-8.2 and 8.3 trigger a php warning that's why error suppression is necessary
-            @self::adapter()->executeStatement('SELECT 1');
+            @self::db()->executeStatement('SELECT 1');
         } catch (Throwable $e) {
             $thrown = $e;
         } finally {
             try {
-                self::adapter()->rollBack();
+                self::db()->rollBack();
             } catch (Throwable) {
             }
         }
@@ -173,7 +172,7 @@ SQL
         $caught = null;
 
         try {
-            self::adapter()->executeStatement(
+            self::db()->executeStatement(
                 "SIGNAL SQLSTATE '40001' SET MESSAGE_TEXT = 'Deadlock found when trying to get lock';"
             );
         } catch (Throwable $e) {
@@ -271,9 +270,9 @@ PHPCHILD;
 
         fclose($pipes[0]); // no stdin
 
-        self::adapter()->beginTransactionWithOptions(new TxOptions());
+        self::db()->beginTransaction();
 
-        self::adapter()->executeStatement(<<<'SQL'
+        self::db()->executeStatement(<<<'SQL'
 UPDATE tm_lock_test SET val = val + 1 WHERE id = 1
 SQL
 );
@@ -296,7 +295,7 @@ SQL
 
         // Attempt conflicting update; one side should deadlock
         try {
-            self::adapter()->executeStatement(<<<'SQL'
+            self::db()->executeStatement(<<<'SQL'
 UPDATE tm_lock_test SET val = val + 1 WHERE id = 2
 SQL
 );
@@ -304,7 +303,7 @@ SQL
             $parentThrown = $e;
 
             try {
-                self::adapter()->rollBack();
+                self::db()->rollBack();
             } catch (Throwable) {
             }
         }
@@ -370,7 +369,7 @@ SQL
         $thrown = null;
 
         try {
-            self::adapter()->executeStatement(<<<SQL
+            self::db()->executeStatement(<<<SQL
 INSERT INTO tm_unique_test (id, email) VALUES (2, 'a@example.com')
 SQL
 );

@@ -68,12 +68,12 @@
             "source": {
                 "type": "git",
                 "url": "git@github.com:Shahelm/transaction-manager-core.git",
-                "reference": "24df944f54f2908608709cc95bf687500074cc43"
+                "reference": "2b319ee0cf11c3ca8c2668569ac19914acc62582"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Shahelm/transaction-manager-core/zipball/24df944f54f2908608709cc95bf687500074cc43",
-                "reference": "24df944f54f2908608709cc95bf687500074cc43",
+                "url": "https://api.github.com/repos/Shahelm/transaction-manager-core/zipball/2b319ee0cf11c3ca8c2668569ac19914acc62582",
+                "reference": "2b319ee0cf11c3ca8c2668569ac19914acc62582",
                 "shasum": ""
             },
             "require": {
@@ -114,7 +114,7 @@
                 "transaction",
                 "transaction-manager"
             ],
-            "time": "2025-12-11T12:24:55+00:00"
+            "time": "2025-12-12T11:05:45+00:00"
         }
     ],
     "packages-dev": [
@@ -124,12 +124,12 @@
             "source": {
                 "type": "git",
                 "url": "git@github.com:Shahelm/transaction-manager-doctrine-adapter.git",
-                "reference": "f708159059c6196b6cec3ca731e293e29b9c9d79"
+                "reference": "32df7a43ec8ef331c896e19e1a5dcf9bd0ce2546"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Shahelm/transaction-manager-doctrine-adapter/zipball/f708159059c6196b6cec3ca731e293e29b9c9d79",
-                "reference": "f708159059c6196b6cec3ca731e293e29b9c9d79",
+                "url": "https://api.github.com/repos/Shahelm/transaction-manager-doctrine-adapter/zipball/32df7a43ec8ef331c896e19e1a5dcf9bd0ce2546",
+                "reference": "32df7a43ec8ef331c896e19e1a5dcf9bd0ce2546",
                 "shasum": ""
             },
             "require": {
@@ -171,7 +171,7 @@
                 "sql",
                 "transaction"
             ],
-            "time": "2025-12-10T17:13:48+00:00"
+            "time": "2025-12-12T11:08:24+00:00"
         },
         {
             "name": "doctrine/dbal",
