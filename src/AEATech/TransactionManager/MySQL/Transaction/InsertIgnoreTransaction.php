@@ -5,6 +5,7 @@ namespace AEATech\TransactionManager\MySQL\Transaction;
 
 use AEATech\TransactionManager\MySQL\MySQLIdentifierQuoter;
 use AEATech\TransactionManager\Query;
+use AEATech\TransactionManager\StatementReusePolicy;
 use AEATech\TransactionManager\Transaction\Internal\InsertValuesBuilder;
 use AEATech\TransactionManager\TransactionInterface;
 
@@ -17,6 +18,7 @@ class InsertIgnoreTransaction implements TransactionInterface
         private readonly array $rows,
         private readonly array $columnTypes = [],
         private readonly bool $isIdempotent = false,
+        private readonly StatementReusePolicy $statementReusePolicy = StatementReusePolicy::None
     ) {
     }
 
@@ -34,7 +36,7 @@ class InsertIgnoreTransaction implements TransactionInterface
             $valuesSql,
         );
 
-        return new Query($sql, $params, $types);
+        return new Query($sql, $params, $types, $this->statementReusePolicy);
     }
 
     public function isIdempotent(): bool

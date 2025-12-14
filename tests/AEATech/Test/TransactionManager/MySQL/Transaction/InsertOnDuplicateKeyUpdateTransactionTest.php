@@ -5,6 +5,7 @@ namespace AEATech\Test\TransactionManager\MySQL\Transaction;
 
 use AEATech\TransactionManager\MySQL\MySQLIdentifierQuoter;
 use AEATech\TransactionManager\MySQL\Transaction\InsertOnDuplicateKeyUpdateTransaction;
+use AEATech\TransactionManager\StatementReusePolicy;
 use AEATech\TransactionManager\Transaction\Internal\InsertValuesBuilder;
 use InvalidArgumentException;
 use Mockery as m;
@@ -60,6 +61,7 @@ class InsertOnDuplicateKeyUpdateTransactionTest extends TestCase
             ['na`me'],
             ['id' => 1],
             true,
+            StatementReusePolicy::PerTransaction
         );
 
         // Act
@@ -73,6 +75,7 @@ class InsertOnDuplicateKeyUpdateTransactionTest extends TestCase
         self::assertSame([1, 'Alex'], $q->params);
         self::assertSame([0 => 1], $q->types);
         self::assertTrue($tx->isIdempotent());
+        self::assertSame(StatementReusePolicy::PerTransaction, $q->statementReusePolicy);
     }
 
     #[Test]

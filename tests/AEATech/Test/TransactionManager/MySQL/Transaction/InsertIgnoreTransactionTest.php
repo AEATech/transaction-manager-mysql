@@ -5,6 +5,7 @@ namespace AEATech\Test\TransactionManager\MySQL\Transaction;
 
 use AEATech\TransactionManager\MySQL\MySQLIdentifierQuoter;
 use AEATech\TransactionManager\MySQL\Transaction\InsertIgnoreTransaction;
+use AEATech\TransactionManager\StatementReusePolicy;
 use AEATech\TransactionManager\Transaction\Internal\InsertValuesBuilder;
 use Mockery as m;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
@@ -57,6 +58,7 @@ class InsertIgnoreTransactionTest extends TestCase
             $rows,
             ['id' => 1],
             false,
+            StatementReusePolicy::PerTransaction
         );
 
         $q = $tx->build();
@@ -67,5 +69,6 @@ class InsertIgnoreTransactionTest extends TestCase
         self::assertSame([1, 'Alex', 2, 'Bob'], $q->params);
         self::assertSame([0 => 1], $q->types);
         self::assertFalse($tx->isIdempotent());
+        self::assertSame(StatementReusePolicy::PerTransaction, $q->statementReusePolicy);
     }
 }

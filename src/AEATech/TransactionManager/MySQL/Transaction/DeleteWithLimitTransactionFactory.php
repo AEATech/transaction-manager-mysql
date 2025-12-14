@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace AEATech\TransactionManager\MySQL\Transaction;
 
 use AEATech\TransactionManager\MySQL\MySQLIdentifierQuoter;
+use AEATech\TransactionManager\StatementReusePolicy;
 
 class DeleteWithLimitTransactionFactory
 {
@@ -19,6 +20,7 @@ class DeleteWithLimitTransactionFactory
         array $identifiers,
         int $limit,
         bool $isIdempotent = true,
+        StatementReusePolicy $statementReusePolicy = StatementReusePolicy::None
     ): DeleteWithLimitTransaction {
         return new DeleteWithLimitTransaction(
             $this->quoter,
@@ -27,7 +29,8 @@ class DeleteWithLimitTransactionFactory
             $identifierColumnType,
             $identifiers,
             $limit,
-            $isIdempotent
+            $isIdempotent,
+            $statementReusePolicy
         );
     }
 }

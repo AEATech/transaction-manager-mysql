@@ -236,6 +236,39 @@ $tx = $txFactory->createUpdateWhenThen(
 $tm->run($tx, $options);
 ```
 
+### Prepared Statement Reuse Hint
+
+This package supports the optional prepared statement reuse hint via `StatementReusePolicy` from the Core package. It is a best‑effort performance hint that may be ignored by connection implementations.
+
+Options:
+
+- `StatementReusePolicy::None` — no reuse (default)
+- `StatementReusePolicy::PerTransaction` — attempt to reuse within a single DB transaction
+- `StatementReusePolicy::PerConnection` — attempt to reuse across transactions while the physical connection remains open
+
+Example with a MySQL transaction factory:
+
+```php
+use AEATech\TransactionManager\StatementReusePolicy;
+
+$tx = $txFactory->createInsert(
+    tableName: 'users',
+    rows: [
+        ['id' => 1, 'email' => 'foo@example.com', 'name' => 'Foo'],
+    ],
+    columnTypes: ['id' => \PDO::PARAM_INT],
+    isIdempotent: false,
+    statementReusePolicy: StatementReusePolicy::PerTransaction,
+);
+
+$tm->run($tx, $options);
+```
+
+Notes:
+
+- This is a performance hint only; do not depend on it for correctness or idempotency.
+- A connection adapter may ignore the hint due to driver limitations, reconnections, or internal safety choices.
+
 ## Parameters and types
 - rows: array of homogeneous associative arrays like `['column' => value, ...]`. All rows must have the same set of keys (columns).
 - columnTypes: `array<string, int|string>` — mapping `column => parameter type` (PDO::PARAM_*, `Doctrine\DBAL\ParameterType::*` or string type names supported by DBAL). Optional — DBAL will try to infer types.

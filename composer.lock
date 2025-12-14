@@ -12,12 +12,12 @@
             "source": {
                 "type": "git",
                 "url": "git@github.com:Shahelm/transaction-manager-common-transactions.git",
-                "reference": "f8eae74f2fe9c8825fb087874b3c4f57c3771110"
+                "reference": "4dd9ab89e9544c38d7097286fa6d111f5f01b24c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Shahelm/transaction-manager-common-transactions/zipball/f8eae74f2fe9c8825fb087874b3c4f57c3771110",
-                "reference": "f8eae74f2fe9c8825fb087874b3c4f57c3771110",
+                "url": "https://api.github.com/repos/Shahelm/transaction-manager-common-transactions/zipball/4dd9ab89e9544c38d7097286fa6d111f5f01b24c",
+                "reference": "4dd9ab89e9544c38d7097286fa6d111f5f01b24c",
                 "shasum": ""
             },
             "require": {
@@ -60,7 +60,7 @@
                 "transaction",
                 "upsert"
             ],
-            "time": "2025-12-10T15:08:27+00:00"
+            "time": "2025-12-14T11:59:00+00:00"
         },
         {
             "name": "aeatech/transaction-manager-core",
@@ -68,12 +68,12 @@
             "source": {
                 "type": "git",
                 "url": "git@github.com:Shahelm/transaction-manager-core.git",
-                "reference": "2b319ee0cf11c3ca8c2668569ac19914acc62582"
+                "reference": "1424fb64045f4c136e02682f85c6475f3e4f8c55"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Shahelm/transaction-manager-core/zipball/2b319ee0cf11c3ca8c2668569ac19914acc62582",
-                "reference": "2b319ee0cf11c3ca8c2668569ac19914acc62582",
+                "url": "https://api.github.com/repos/Shahelm/transaction-manager-core/zipball/1424fb64045f4c136e02682f85c6475f3e4f8c55",
+                "reference": "1424fb64045f4c136e02682f85c6475f3e4f8c55",
                 "shasum": ""
             },
             "require": {
@@ -114,7 +114,7 @@
                 "transaction",
                 "transaction-manager"
             ],
-            "time": "2025-12-12T11:05:45+00:00"
+            "time": "2025-12-14T11:42:56+00:00"
         }
     ],
     "packages-dev": [

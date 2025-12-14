@@ -5,6 +5,7 @@ namespace AEATech\Test\TransactionManager\MySQL\Transaction;
 
 use AEATech\TransactionManager\MySQL\MySQLIdentifierQuoter;
 use AEATech\TransactionManager\MySQL\Transaction\DeleteWithLimitTransactionFactory;
+use AEATech\TransactionManager\StatementReusePolicy;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
@@ -21,7 +22,7 @@ class DeleteWithLimitTransactionFactoryTest extends TestCase
     {
         $factory = new DeleteWithLimitTransactionFactory(new MySQLIdentifierQuoter());
 
-        $tx = $factory->factory('logs', 'id', 1, [10, 11, 12], 2);
+        $tx = $factory->factory('logs', 'id', 1, [10, 11, 12], 2, true, StatementReusePolicy::PerTransaction);
 
         $q = $tx->build();
 
@@ -29,5 +30,6 @@ class DeleteWithLimitTransactionFactoryTest extends TestCase
         self::assertSame([10, 11, 12], $q->params);
         self::assertSame([1, 1, 1], $q->types);
         self::assertTrue($tx->isIdempotent());
+        self::assertSame(StatementReusePolicy::PerTransaction, $q->statementReusePolicy);
     }
 }

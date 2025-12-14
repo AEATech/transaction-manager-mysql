@@ -5,6 +5,7 @@ namespace AEATech\Test\TransactionManager\MySQL\Transaction;
 
 use AEATech\TransactionManager\MySQL\MySQLIdentifierQuoter;
 use AEATech\TransactionManager\MySQL\Transaction\DeleteWithLimitTransaction;
+use AEATech\TransactionManager\StatementReusePolicy;
 use InvalidArgumentException;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\DataProvider;
@@ -28,7 +29,8 @@ class DeleteWithLimitTransactionTest extends TestCase
             1,
             [10, 11, 12],
             2,
-            true
+            true,
+            StatementReusePolicy::PerTransaction
         );
 
         $q = $tx->build();
@@ -37,6 +39,7 @@ class DeleteWithLimitTransactionTest extends TestCase
         self::assertSame([10, 11, 12], $q->params);
         self::assertSame([1, 1, 1], $q->types);
         self::assertTrue($tx->isIdempotent());
+        self::assertSame(StatementReusePolicy::PerTransaction, $q->statementReusePolicy);
     }
 
     #[Test]

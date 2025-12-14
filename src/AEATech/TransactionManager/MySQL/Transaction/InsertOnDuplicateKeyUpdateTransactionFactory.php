@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace AEATech\TransactionManager\MySQL\Transaction;
 
 use AEATech\TransactionManager\MySQL\MySQLIdentifierQuoter;
+use AEATech\TransactionManager\StatementReusePolicy;
 use AEATech\TransactionManager\Transaction\Internal\InsertValuesBuilder;
 
 class InsertOnDuplicateKeyUpdateTransactionFactory
@@ -20,6 +21,7 @@ class InsertOnDuplicateKeyUpdateTransactionFactory
         array $updateColumns,
         array $columnTypes = [],
         bool $isIdempotent = false,
+        StatementReusePolicy $statementReusePolicy = StatementReusePolicy::None
     ): InsertOnDuplicateKeyUpdateTransaction {
         return new InsertOnDuplicateKeyUpdateTransaction(
             $this->insertValuesBuilder,
@@ -28,7 +30,8 @@ class InsertOnDuplicateKeyUpdateTransactionFactory
             $rows,
             $updateColumns,
             $columnTypes,
-            $isIdempotent
+            $isIdempotent,
+            $statementReusePolicy
         );
     }
 }
