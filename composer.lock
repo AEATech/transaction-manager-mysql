@@ -124,12 +124,12 @@
             "source": {
                 "type": "git",
                 "url": "git@github.com:Shahelm/transaction-manager-doctrine-adapter.git",
-                "reference": "32df7a43ec8ef331c896e19e1a5dcf9bd0ce2546"
+                "reference": "daca36d5a74b0390b9f43713191c6fe9cad2e565"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Shahelm/transaction-manager-doctrine-adapter/zipball/32df7a43ec8ef331c896e19e1a5dcf9bd0ce2546",
-                "reference": "32df7a43ec8ef331c896e19e1a5dcf9bd0ce2546",
+                "url": "https://api.github.com/repos/Shahelm/transaction-manager-doctrine-adapter/zipball/daca36d5a74b0390b9f43713191c6fe9cad2e565",
+                "reference": "daca36d5a74b0390b9f43713191c6fe9cad2e565",
                 "shasum": ""
             },
             "require": {
@@ -171,7 +171,7 @@
                 "sql",
                 "transaction"
             ],
-            "time": "2025-12-12T11:08:24+00:00"
+            "time": "2025-12-16T22:09:20+00:00"
         },
         {
             "name": "doctrine/dbal",

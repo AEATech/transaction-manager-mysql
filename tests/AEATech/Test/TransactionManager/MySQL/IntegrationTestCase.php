@@ -4,6 +4,8 @@ declare(strict_types=1);
 namespace AEATech\Test\TransactionManager\MySQL;
 
 use AEATech\TransactionManager\DoctrineAdapter\DbalMysqlConnectionAdapter;
+use AEATech\TransactionManager\DoctrineAdapter\StatementExecutor\BindingInfoResolver;
+use AEATech\TransactionManager\DoctrineAdapter\StatementExecutor\StatementExecutor;
 use AEATech\TransactionManager\ExecutionPlanBuilder;
 use AEATech\TransactionManager\GenericErrorClassifier;
 use AEATech\TransactionManager\MySQL\MySQLErrorHeuristics;
@@ -32,7 +34,7 @@ abstract class IntegrationTestCase extends TestCase
         self::$raw = self::makeDbalConnection();
         self::$tm = new TransactionManager(
             new ExecutionPlanBuilder(),
-            new DbalMysqlConnectionAdapter(self::$raw),
+            new DbalMysqlConnectionAdapter(self::$raw, new StatementExecutor(new BindingInfoResolver())),
             new GenericErrorClassifier(new MySQLErrorHeuristics()),
             new SystemSleeper(),
         );

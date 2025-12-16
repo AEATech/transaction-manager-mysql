@@ -7,7 +7,7 @@ use AEATech\Test\TransactionManager\MySQL\IntegrationTestCase;
 use AEATech\TransactionManager\MySQL\MySQLIdentifierQuoter;
 use AEATech\TransactionManager\MySQL\Transaction\InsertIgnoreTransaction;
 use AEATech\TransactionManager\Transaction\Internal\InsertValuesBuilder;
-use Doctrine\DBAL\ParameterType;
+use PDO;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Group;
 use PHPUnit\Framework\Attributes\Test;
@@ -44,8 +44,8 @@ SQL
         ];
 
         $types = [
-            'id' => ParameterType::INTEGER,
-            'name' => ParameterType::STRING,
+            'id' => PDO::PARAM_INT,
+            'name' => PDO::PARAM_STR,
         ];
 
         $tx = new InsertIgnoreTransaction(
