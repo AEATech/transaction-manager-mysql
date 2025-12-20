@@ -12,12 +12,12 @@
             "source": {
                 "type": "git",
                 "url": "git@github.com:Shahelm/transaction-manager-common-transactions.git",
-                "reference": "b4c4a4521aa94510754d1eac51da1f6b794f91fd"
+                "reference": "b10fa49a3b3b100f7e42099de86b9c6658f748ac"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Shahelm/transaction-manager-common-transactions/zipball/b4c4a4521aa94510754d1eac51da1f6b794f91fd",
-                "reference": "b4c4a4521aa94510754d1eac51da1f6b794f91fd",
+                "url": "https://api.github.com/repos/Shahelm/transaction-manager-common-transactions/zipball/b10fa49a3b3b100f7e42099de86b9c6658f748ac",
+                "reference": "b10fa49a3b3b100f7e42099de86b9c6658f748ac",
                 "shasum": ""
             },
             "require": {
@@ -60,7 +60,7 @@
                 "transaction",
                 "upsert"
             ],
-            "time": "2025-12-20T12:34:13+00:00"
+            "time": "2025-12-20T15:50:11+00:00"
         },
         {
             "name": "aeatech/transaction-manager-core",
@@ -68,12 +68,12 @@
             "source": {
                 "type": "git",
                 "url": "git@github.com:Shahelm/transaction-manager-core.git",
-                "reference": "fbe8444b57c9bbf3a584363f1179ad259afc814f"
+                "reference": "d2ad900feb9cf66a953688ae0a5205fe33546270"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Shahelm/transaction-manager-core/zipball/fbe8444b57c9bbf3a584363f1179ad259afc814f",
-                "reference": "fbe8444b57c9bbf3a584363f1179ad259afc814f",
+                "url": "https://api.github.com/repos/Shahelm/transaction-manager-core/zipball/d2ad900feb9cf66a953688ae0a5205fe33546270",
+                "reference": "d2ad900feb9cf66a953688ae0a5205fe33546270",
                 "shasum": ""
             },
             "require": {
@@ -114,7 +114,7 @@
                 "transaction",
                 "transaction-manager"
             ],
-            "time": "2025-12-20T12:30:06+00:00"
+            "time": "2025-12-20T15:46:31+00:00"
         }
     ],
     "packages-dev": [
@@ -124,12 +124,12 @@
             "source": {
                 "type": "git",
                 "url": "git@github.com:Shahelm/transaction-manager-doctrine-adapter.git",
-                "reference": "7274b3c6e4d495cb168bbf3a55dd136c974e7ed3"
+                "reference": "aec332647ef95ffbcda30e83a38ed4fc156430f4"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Shahelm/transaction-manager-doctrine-adapter/zipball/7274b3c6e4d495cb168bbf3a55dd136c974e7ed3",
-                "reference": "7274b3c6e4d495cb168bbf3a55dd136c974e7ed3",
+                "url": "https://api.github.com/repos/Shahelm/transaction-manager-doctrine-adapter/zipball/aec332647ef95ffbcda30e83a38ed4fc156430f4",
+                "reference": "aec332647ef95ffbcda30e83a38ed4fc156430f4",
                 "shasum": ""
             },
             "require": {
@@ -171,7 +171,7 @@
                 "sql",
                 "transaction"
             ],
-            "time": "2025-12-20T12:48:56+00:00"
+            "time": "2025-12-20T15:51:27+00:00"
         },
         {
             "name": "doctrine/dbal",
