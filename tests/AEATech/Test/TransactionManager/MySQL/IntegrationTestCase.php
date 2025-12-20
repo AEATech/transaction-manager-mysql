@@ -9,6 +9,7 @@ use AEATech\TransactionManager\DoctrineAdapter\StatementExecutor\StatementExecut
 use AEATech\TransactionManager\ExecutionPlanBuilder;
 use AEATech\TransactionManager\GenericErrorClassifier;
 use AEATech\TransactionManager\MySQL\MySQLErrorHeuristics;
+use AEATech\TransactionManager\RetryPolicy;
 use AEATech\TransactionManager\SystemSleeper;
 use AEATech\TransactionManager\TransactionInterface;
 use AEATech\TransactionManager\TransactionManager;
@@ -36,6 +37,7 @@ abstract class IntegrationTestCase extends TestCase
             new ExecutionPlanBuilder(),
             new DbalMysqlConnectionAdapter(self::$raw, new StatementExecutor(new BindingInfoResolver())),
             new GenericErrorClassifier(new MySQLErrorHeuristics()),
+            RetryPolicy::noRetry(),
             new SystemSleeper(),
         );
     }
