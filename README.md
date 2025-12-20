@@ -53,6 +53,7 @@ $tm = new TransactionManager(
     executionPlanBuilder: new ExecutionPlanBuilder(),
     connection: $conn,
     errorClassifier: new MySQLErrorClassifier(),
+    defaultRetryPolicy: new RetryPolicy(3, new ExponentialBackoff()),
     sleeper: new SystemSleeper(),
 );
 
