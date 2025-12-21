@@ -1,6 +1,7 @@
 {
     "name": "aeatech/transaction-manager-mysql",
     "description": "MySQL dialect layer for AEATech Transaction Manager, providing MySQL-specific SQL behavior and extensions not covered by the core or common packages.",
+    "keywords": ["transaction-manager", "transaction", "database", "MySQL"],
     "license": "MIT",
     "type": "library",
     "config": {
@@ -48,14 +49,5 @@
             "/tests",
             "/phpunit.xml"
         ]
-    },
-    "keywords": [
-        "transaction",
-        "bulk-update",
-        "insert",
-        "update",
-        "delete",
-        "mysql-specific",
-        "database"
-    ]
+    }
 }
