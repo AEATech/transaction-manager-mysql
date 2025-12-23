@@ -372,4 +372,4 @@ docker-compose -p aeatech-transaction-manager-mysql -f docker/docker-compose.yml
 
 ## License
 
-MIT License. See [LICENSE](./LICENSE) for details.
+This project is licensed under the MIT License. See the [LICENSE](./LICENSE) file for details.
