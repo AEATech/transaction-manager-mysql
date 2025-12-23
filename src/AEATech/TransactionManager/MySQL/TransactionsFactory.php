@@ -6,6 +6,7 @@ namespace AEATech\TransactionManager\MySQL;
 use AEATech\TransactionManager\MySQL\Transaction\DeleteWithLimitTransactionFactory;
 use AEATech\TransactionManager\MySQL\Transaction\InsertIgnoreTransactionFactory;
 use AEATech\TransactionManager\MySQL\Transaction\InsertOnDuplicateKeyUpdateTransactionFactory;
+use AEATech\TransactionManager\StatementReusePolicy;
 use AEATech\TransactionManager\Transaction\DeleteTransactionFactory;
 use AEATech\TransactionManager\Transaction\InsertTransactionFactory;
 use AEATech\TransactionManager\Transaction\SqlTransaction;
@@ -22,22 +23,23 @@ use InvalidArgumentException;
  *
  * Typical usage:
  *
- *     $transactions = new TransactionsFactory(
- *         insertTransactionFactory: $insertFactory,
- *         insertOnDuplicateKeyUpdateTransactionFactory: $upsertFactory,
- *     );
+ * $transactions = new TransactionsFactory(
+ *     insertTransactionFactory: $insertTransactionFactory,
+ *     insertIgnoreTransactionFactory: $insertIgnoreTransactionFactory,
+ *     ...,
+ * );
  *
- *     $tx = $transactions->createInsert(
- *         tableName: 'users',
- *         rows: [
- *             ['id' => 1, 'email' => 'foo@example.com'],
- *             ['id' => 2, 'email' => 'bar@example.com'],
- *         ],
- *         columnTypes: ['id' => \PDO::PARAM_INT],
- *         isIdempotent: false,
- *     );
+ * $tx = $transactions->createInsert(
+ *     tableName: 'users',
+ *     rows: [
+ *         ['id' => 1, 'email' => 'foo@example.com'],
+ *         ['id' => 2, 'email' => 'bar@example.com'],
+ *     ],
+ *     columnTypes: ['id' => \PDO::PARAM_INT],
+ *     isIdempotent: false,
+ * );
  *
- *     $runResult = $transactionManager->run($tx, $options);
+ * $runResult = $transactionManager->run($tx, $options);
  */
 class TransactionsFactory
 {
@@ -116,6 +118,10 @@ class TransactionsFactory
      *
      *   The actual behavior depends on your TransactionManager implementation.
      *
+     * @param StatementReusePolicy $statementReusePolicy
+     *   Controls whether the underlying query builder should reuse the same
+     *   statement object for multiple executions.
+     *
      * Validation / errors:
      *   - This method itself does NOT validate the shape of $rows or $columnTypes
      *     and does not throw exceptions.
@@ -131,12 +137,14 @@ class TransactionsFactory
         array $rows,
         array $columnTypes = [],
         bool $isIdempotent = false,
+        StatementReusePolicy $statementReusePolicy = StatementReusePolicy::None
     ): TransactionInterface {
         return $this->insertTransactionFactory->factory(
             tableName: $tableName,
             rows: $rows,
             columnTypes: $columnTypes,
-            isIdempotent: $isIdempotent
+            isIdempotent: $isIdempotent,
+            statementReusePolicy: $statementReusePolicy
         );
     }
 
@@ -146,7 +154,7 @@ class TransactionsFactory
      *     INSERT IGNORE INTO tableName (col1, col2, ...)
      *     VALUES (...), (...), ...
      *
-     * This variant ignores constraint violations (e.g. duplicate key errors)
+     * This variant ignores constraint violations (e.g., duplicate key errors)
      * and continues inserting other rows when possible.
      *
      * @param string $tableName
@@ -175,15 +183,19 @@ class TransactionsFactory
      *
      *   For INSERT IGNORE specifically:
      *   - it is usually still considered non-idempotent by default, because
-     *     the first run may successfully insert a row, and subsequent runs
+     *     the first run may successfully insert a row, and later runs
      *     may silently skip it, changing the "affected rows" semantics;
      *   - set to true only if your business logic explicitly designs this
      *     statement to be idempotent and your retry policy is aware of that.
      *
+     * @param StatementReusePolicy $statementReusePolicy
+     *   Controls whether the underlying query builder should reuse the same
+     *   statement object for multiple executions.
+     *
      * Validation / errors:
      *   - This method itself does NOT validate the shape of $rows or $columnTypes
      *     and does not throw exceptions.
-     *   - If the provided data is inconsistent (e.g. empty $rows, different
+     *   - If the provided data is inconsistent (e.g., empty $rows, different
      *     column sets per row, invalid identifiers), an InvalidArgumentException
      *     (or another domain-specific exception) may be thrown later, when the
      *     transaction is built/executed via TransactionManager::run().
@@ -195,12 +207,14 @@ class TransactionsFactory
         array $rows,
         array $columnTypes = [],
         bool $isIdempotent = false,
+        StatementReusePolicy $statementReusePolicy = StatementReusePolicy::None
     ): TransactionInterface {
         return $this->insertIgnoreTransactionFactory->factory(
             tableName: $tableName,
             rows: $rows,
             columnTypes: $columnTypes,
-            isIdempotent: $isIdempotent
+            isIdempotent: $isIdempotent,
+            statementReusePolicy: $statementReusePolicy
         );
     }
 
@@ -280,10 +294,14 @@ class TransactionsFactory
      *   Set to true only if you have carefully reviewed the semantics for
      *   your table and retry strategy.
      *
+     * @param StatementReusePolicy $statementReusePolicy
+     *   Controls whether the underlying query builder should reuse the same
+     *   statement object for multiple executions.
+     *
      * Validation / errors:
      *  - This method itself does NOT validate the shape of $rows or $columnTypes
      *    and does not throw exceptions.
-     *  - If the provided data is inconsistent (e.g. empty $rows, different
+     *  - If the provided data is inconsistent (e.g., empty $rows, different
      *    column sets per row, invalid identifiers), an InvalidArgumentException
      *    (or another domain-specific exception) may be thrown later, when the
      *    transaction is built/executed via TransactionManager::run().
@@ -300,13 +318,15 @@ class TransactionsFactory
         array $updateColumns,
         array $columnTypes = [],
         bool $isIdempotent = false,
+        StatementReusePolicy $statementReusePolicy = StatementReusePolicy::None
     ): TransactionInterface {
         return $this->insertOnDuplicateKeyUpdateTransactionFactory->factory(
             tableName: $tableName,
             rows: $rows,
             updateColumns: $updateColumns,
             columnTypes: $columnTypes,
-            isIdempotent: $isIdempotent
+            isIdempotent: $isIdempotent,
+            statementReusePolicy: $statementReusePolicy
         );
     }
 
@@ -355,6 +375,10 @@ class TransactionsFactory
      *        connection drop), and you are prepared to accept the side effects
      *        of possible retries. Otherwise, keep it `false`.
      *
+     * @param StatementReusePolicy $statementReusePolicy
+     *        Controls whether the underlying query builder should reuse the same
+     *        statement object for multiple executions.
+     *
      * @return TransactionInterface
      */
     public function createSql(
@@ -362,8 +386,9 @@ class TransactionsFactory
         array $params = [],
         array $types = [],
         bool $isIdempotent = false,
+        StatementReusePolicy $statementReusePolicy = StatementReusePolicy::None
     ): TransactionInterface {
-        return new SqlTransaction($sql, $params, $types, $isIdempotent);
+        return new SqlTransaction($sql, $params, $types, $isIdempotent, $statementReusePolicy);
     }
 
     /**
@@ -388,7 +413,7 @@ class TransactionsFactory
      *   removal of unintended rows.
      *
      * @param mixed $identifierColumnType
-     *   Type for all identifier values, e.g. a Doctrine DBAL type constant
+     *   Type for all identifier values, e.g., a Doctrine DBAL type constant
      *   or `PDO::PARAM_*` value, depending on the adapter.
      *
      * @param array<int, scalar> $identifiers
@@ -403,7 +428,7 @@ class TransactionsFactory
      *
      * @param bool $isIdempotent
      *   Set to `true` if it is safe to re-execute the delete statement in case
-     *   of transient failures (e.g. lock wait timeout, connection drop):
+     *   of transient failures (e.g., lock wait timeout, connection drop):
      *
      *   - Deleting the same set of identifiers twice is usually idempotent
      *     at the database level (the second run will affect 0 rows).
@@ -411,9 +436,13 @@ class TransactionsFactory
      *     count, or if deletions trigger side effects (cascades, triggers,
      *     denormalized counters, etc.), you MUST review idempotency carefully.
      *
+     * @param StatementReusePolicy $statementReusePolicy
+     *   Controls whether the underlying query builder should reuse the same
+     *   statement object for multiple executions.
+     *
      * Validation / errors:
      *   - This method does not validate $identifiers and does not throw on its own.
-     *   - If $identifiers is empty or invalid, the underlying transaction
+     *   - If $identifiers are empty or invalid, the underlying transaction
      *     implementation may throw an InvalidArgumentException when the query
      *     is built or executed via TransactionManager::run().
      *
@@ -425,13 +454,15 @@ class TransactionsFactory
         mixed $identifierColumnType,
         array $identifiers,
         bool $isIdempotent = true,
+        StatementReusePolicy $statementReusePolicy = StatementReusePolicy::None
     ): TransactionInterface {
         return $this->deleteTransactionFactory->factory(
             tableName: $tableName,
             identifierColumn: $identifierColumn,
             identifierColumnType: $identifierColumnType,
             identifiers: $identifiers,
-            isIdempotent: $isIdempotent
+            isIdempotent: $isIdempotent,
+            statementReusePolicy: $statementReusePolicy
         );
     }
 
@@ -482,6 +513,10 @@ class TransactionsFactory
      *     In such cases it is usually safer to treat the transaction as
      *     **non-idempotent** and leave `$isIdempotent` set to `false`.
      *
+     * @param StatementReusePolicy $statementReusePolicy
+     *   Controls whether the underlying query builder should reuse the same
+     *   statement object for multiple executions.
+     *
      * @return TransactionInterface
      *
      * @throws InvalidArgumentException
@@ -496,6 +531,7 @@ class TransactionsFactory
         array $identifiers,
         int $limit,
         bool $isIdempotent = true,
+        StatementReusePolicy $statementReusePolicy = StatementReusePolicy::None
     ): TransactionInterface {
         return $this->deleteWithLimitTransactionFactory->factory(
             tableName: $tableName,
@@ -503,7 +539,8 @@ class TransactionsFactory
             identifierColumnType: $identifierColumnType,
             identifiers: $identifiers,
             limit: $limit,
-            isIdempotent: $isIdempotent
+            isIdempotent: $isIdempotent,
+            statementReusePolicy: $statementReusePolicy
         );
     }
 
@@ -516,7 +553,7 @@ class TransactionsFactory
      *     WHERE identifierColumn IN (?, ?, ...)
      *
      * This is suitable for cases where *all* targeted rows should receive the
-     * same updates (e.g. mass status change).
+     * same updates (e.g., mass status change).
      *
      * @param string $tableName
      *   Logical table name without quoting. Must be:
@@ -525,7 +562,7 @@ class TransactionsFactory
      *   - a valid table in the current MySQL schema.
      *
      * @param string $identifierColumn
-     *   Name of the column used in the `WHERE ... IN (...)` clause. Typically
+     *   Name of the column used in the `WHERE ... IN (...)` clause. Typically,
      *   a primary key or unique key, but the factory does not enforce this.
      *
      * @param mixed $identifierColumnType
@@ -547,7 +584,7 @@ class TransactionsFactory
      *   values to all rows matched by the identifier list.
      *
      * @param array<string, int|string> $columnTypes
-     *   Optional per-column type map, e.g. Doctrine DBAL type constants or
+     *   Optional per-column type map, e.g., Doctrine DBAL type constants or
      *   `PDO::PARAM_*` values. If a column is not present in this array, a
      *   default type (chosen by the underlying implementation) will be used.
      *
@@ -555,11 +592,15 @@ class TransactionsFactory
      *   Set to `true` if re-executing the UPDATE with the same identifiers and
      *   values is safe for your application logic. Typical scenarios:
      *
-     *   - Idempotent: setting deterministic fields (e.g. status flags) to a
+     *   - Idempotent: setting deterministic fields (e.g., status flags) to a
      *     fixed value where running the same statement twice has no additional
      *     side effects.
      *   - Non-idempotent: updates that depend on the current value, include
      *     counters, or rely on "rows affected" semantics in business logic.
+     *
+     * @param StatementReusePolicy $statementReusePolicy
+     *   Controls whether the underlying query builder should reuse the same
+     *   statement object for multiple executions.
      *
      * Validation / errors:
      *   - This method does not validate the array shapes or detect empty sets.
@@ -578,6 +619,7 @@ class TransactionsFactory
         array $columnsWithValuesForUpdate,
         array $columnTypes = [],
         bool $isIdempotent = true,
+        StatementReusePolicy $statementReusePolicy = StatementReusePolicy::None
     ): TransactionInterface {
         return $this->updateTransactionFactory->factory(
             tableName: $tableName,
@@ -586,7 +628,8 @@ class TransactionsFactory
             identifiers: $identifiers,
             columnsWithValuesForUpdate: $columnsWithValuesForUpdate,
             columnTypes: $columnTypes,
-            isIdempotent: $isIdempotent
+            isIdempotent: $isIdempotent,
+            statementReusePolicy: $statementReusePolicy
         );
     }
 
@@ -613,7 +656,7 @@ class TransactionsFactory
      *
      * This pattern is useful for high-throughput fan-out updates where many
      * rows must be updated with **different** values, but the application
-     * performs the update in **one round-trip** instead of N individual UPDATEs.
+     * performs the update in **one round-trip** instead of N individual UPDATE.
      *
      * @param string $tableName
      *     Logical table name (unquoted). Must refer to an existing table in the
@@ -682,6 +725,10 @@ class TransactionsFactory
      *     If your system triggers domain events, cascades, counters, or other
      *     side effects upon updates, you MUST evaluate idempotency manually.
      *
+     * @param StatementReusePolicy $statementReusePolicy
+     *     Controls whether the underlying query builder should reuse the same
+     *     statement object for multiple executions.
+     *
      * @return TransactionInterface
      *     A ready-to-execute transaction that can be passed to
      *     TransactionManager::run().
@@ -694,6 +741,7 @@ class TransactionsFactory
         array $updateColumns,
         array $updateColumnTypes = [],
         bool $isIdempotent = true,
+        StatementReusePolicy $statementReusePolicy = StatementReusePolicy::None
     ): TransactionInterface {
         return $this->updateWhenThenTransactionFactory->factory(
             tableName: $tableName,
@@ -702,7 +750,8 @@ class TransactionsFactory
             identifierColumnType: $identifierColumnType,
             updateColumns: $updateColumns,
             updateColumnTypes: $updateColumnTypes,
-            isIdempotent: $isIdempotent
+            isIdempotent: $isIdempotent,
+            statementReusePolicy: $statementReusePolicy
         );
     }
 }

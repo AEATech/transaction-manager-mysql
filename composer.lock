@@ -12,12 +12,12 @@
             "source": {
                 "type": "git",
                 "url": "git@github.com:Shahelm/transaction-manager-common-transactions.git",
-                "reference": "b10fa49a3b3b100f7e42099de86b9c6658f748ac"
+                "reference": "9824a401337d5490d2b51c8590ba49742855cf29"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Shahelm/transaction-manager-common-transactions/zipball/b10fa49a3b3b100f7e42099de86b9c6658f748ac",
-                "reference": "b10fa49a3b3b100f7e42099de86b9c6658f748ac",
+                "url": "https://api.github.com/repos/Shahelm/transaction-manager-common-transactions/zipball/9824a401337d5490d2b51c8590ba49742855cf29",
+                "reference": "9824a401337d5490d2b51c8590ba49742855cf29",
                 "shasum": ""
             },
             "require": {
@@ -54,13 +54,13 @@
             ],
             "description": "Contains reusable, dialect-independent SQL transaction implementations, identifier quoting abstraction, and shared builders used across MySQL, PostgreSQL, and future AEATech Transaction Manager adapters",
             "keywords": [
-                "aeatech",
-                "bulk-update",
-                "sql",
+                "MySQL",
+                "PostgreSQL",
+                "database",
                 "transaction",
-                "upsert"
+                "transaction-manager"
             ],
-            "time": "2025-12-20T15:50:11+00:00"
+            "time": "2025-12-23T12:39:16+00:00"
         },
         {
             "name": "aeatech/transaction-manager-core",
@@ -68,12 +68,12 @@
             "source": {
                 "type": "git",
                 "url": "git@github.com:Shahelm/transaction-manager-core.git",
-                "reference": "d2ad900feb9cf66a953688ae0a5205fe33546270"
+                "reference": "886c1b70d7d4d9cc6fc55a24e90e8b842ca943e1"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Shahelm/transaction-manager-core/zipball/d2ad900feb9cf66a953688ae0a5205fe33546270",
-                "reference": "d2ad900feb9cf66a953688ae0a5205fe33546270",
+                "url": "https://api.github.com/repos/Shahelm/transaction-manager-core/zipball/886c1b70d7d4d9cc6fc55a24e90e8b842ca943e1",
+                "reference": "886c1b70d7d4d9cc6fc55a24e90e8b842ca943e1",
                 "shasum": ""
             },
             "require": {
@@ -109,12 +109,13 @@
             ],
             "description": "Transaction manager core",
             "keywords": [
+                "MySQL",
+                "PostgreSQL",
                 "database",
-                "sql",
                 "transaction",
                 "transaction-manager"
             ],
-            "time": "2025-12-20T15:46:31+00:00"
+            "time": "2025-12-23T12:36:05+00:00"
         }
     ],
     "packages-dev": [
@@ -124,12 +125,12 @@
             "source": {
                 "type": "git",
                 "url": "git@github.com:Shahelm/transaction-manager-doctrine-adapter.git",
-                "reference": "aec332647ef95ffbcda30e83a38ed4fc156430f4"
+                "reference": "806201433e1ea595e36f49a106eae7425749b726"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Shahelm/transaction-manager-doctrine-adapter/zipball/aec332647ef95ffbcda30e83a38ed4fc156430f4",
-                "reference": "aec332647ef95ffbcda30e83a38ed4fc156430f4",
+                "url": "https://api.github.com/repos/Shahelm/transaction-manager-doctrine-adapter/zipball/806201433e1ea595e36f49a106eae7425749b726",
+                "reference": "806201433e1ea595e36f49a106eae7425749b726",
                 "shasum": ""
             },
             "require": {
@@ -139,6 +140,7 @@
             },
             "require-dev": {
                 "mockery/mockery": "^1.6.10",
+                "phpbench/phpbench": "^1.4",
                 "phpunit/phpunit": "^11.5",
                 "roave/security-advisories": "dev-master"
             },
@@ -151,14 +153,17 @@
             },
             "autoload-dev": {
                 "psr-4": {
-                    "AEATech\\Test\\TransactionManager\\DoctrineAdapter\\": "tests/AEATech/Test/TransactionManager/DoctrineAdapter"
+                    "AEATech\\Test\\TransactionManager\\DoctrineAdapter\\": "tests/AEATech/Test/TransactionManager/DoctrineAdapter",
+                    "AEATech\\Benchmark\\TransactionManager\\DoctrineAdapter\\": "benchmarks/AEATech/Benchmark/TransactionManager/DoctrineAdapter"
                 }
             },
             "archive": {
                 "exclude": [
                     "/docker",
                     "/tests",
-                    "/phpunit.xml"
+                    "/phpunit.xml",
+                    "/phpbench.json",
+                    "/benchmarks"
                 ]
             },
             "license": [
@@ -166,12 +171,13 @@
             ],
             "description": "Implementation of the transaction manager connection with Doctrine",
             "keywords": [
+                "MySQL",
+                "PostgreSQL",
                 "database",
-                "doctrine-dbal",
-                "sql",
-                "transaction"
+                "transaction",
+                "transaction-manager"
             ],
-            "time": "2025-12-20T15:51:27+00:00"
+            "time": "2025-12-23T12:39:16+00:00"
         },
         {
             "name": "doctrine/dbal",

@@ -9,6 +9,7 @@ use AEATech\TransactionManager\MySQL\Transaction\InsertIgnoreTransaction;
 use AEATech\TransactionManager\MySQL\Transaction\InsertIgnoreTransactionFactory;
 use AEATech\TransactionManager\MySQL\Transaction\InsertOnDuplicateKeyUpdateTransaction;
 use AEATech\TransactionManager\MySQL\Transaction\InsertOnDuplicateKeyUpdateTransactionFactory;
+use AEATech\TransactionManager\StatementReusePolicy;
 use AEATech\TransactionManager\Transaction\InsertTransaction;
 use AEATech\TransactionManager\Transaction\DeleteTransaction;
 use AEATech\TransactionManager\Transaction\UpdateTransaction;
@@ -70,7 +71,7 @@ class TransactionsFactoryTest extends TestCase
 
         $this->insertFactory->shouldReceive('factory')
             ->once()
-            ->with('users', $rows, ['id' => 1], true)
+            ->with('users', $rows, ['id' => 1], true, StatementReusePolicy::None)
             ->andReturn($tx);
 
         $result = $this->transactionsFactory->createInsert('users', $rows, ['id' => 1], true);
@@ -86,7 +87,7 @@ class TransactionsFactoryTest extends TestCase
 
         $this->insertIgnoreFactory->shouldReceive('factory')
             ->once()
-            ->with('t', $rows, [], false)
+            ->with('t', $rows, [], false, StatementReusePolicy::None)
             ->andReturn($tx);
 
         $result = $this->transactionsFactory->createInsertIgnore('t', $rows);
@@ -103,7 +104,7 @@ class TransactionsFactoryTest extends TestCase
 
         $this->upsertFactory->shouldReceive('factory')
             ->once()
-            ->with('contacts', $rows, $updateColumns, ['id' => 1], true)
+            ->with('contacts', $rows, $updateColumns, ['id' => 1], true, StatementReusePolicy::None)
             ->andReturn($tx);
 
         $result = $this->transactionsFactory->createInsertOnDuplicateKeyUpdate(
@@ -124,7 +125,7 @@ class TransactionsFactoryTest extends TestCase
         $params = ['p...'];
         $types = ['t...'];
 
-        $expected = new SqlTransaction($sql, $params, $types);
+        $expected = new SqlTransaction($sql, $params, $types, false, StatementReusePolicy::None);
 
         $sqlTransaction = $this->transactionsFactory->createSql($sql, $params, $types);
 
@@ -138,7 +139,7 @@ class TransactionsFactoryTest extends TestCase
 
         $this->deleteWithLimitFactory->shouldReceive('factory')
             ->once()
-            ->with('logs', 'id', 1, [10, 11, 12], 2, true)
+            ->with('logs', 'id', 1, [10, 11, 12], 2, true, StatementReusePolicy::None)
             ->andReturn($tx);
 
         $result = $this->transactionsFactory->createDeleteWithLimit(
@@ -159,7 +160,7 @@ class TransactionsFactoryTest extends TestCase
 
         $this->deleteFactory->shouldReceive('factory')
             ->once()
-            ->with('users', 'id', 1, [1, 2, 3], true)
+            ->with('users', 'id', 1, [1, 2, 3], true, StatementReusePolicy::None)
             ->andReturn($tx);
 
         $result = $this->transactionsFactory->createDelete(
@@ -183,7 +184,7 @@ class TransactionsFactoryTest extends TestCase
 
         $this->updateFactory->shouldReceive('factory')
             ->once()
-            ->with('profiles', 'id', 1, $identifiers, $values, $types, false)
+            ->with('profiles', 'id', 1, $identifiers, $values, $types, false, StatementReusePolicy::None)
             ->andReturn($tx);
 
         $result = $this->transactionsFactory->createUpdate(
@@ -213,7 +214,7 @@ class TransactionsFactoryTest extends TestCase
 
         $this->updateWhenThenFactory->shouldReceive('factory')
             ->once()
-            ->with('tasks', $rows, 'id', 1, $updateColumns, $updateTypes, true)
+            ->with('tasks', $rows, 'id', 1, $updateColumns, $updateTypes, true, StatementReusePolicy::None)
             ->andReturn($tx);
 
         $result = $this->transactionsFactory->createUpdateWhenThen(
