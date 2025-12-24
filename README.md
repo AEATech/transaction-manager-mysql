@@ -1,5 +1,7 @@
 # AEATech Transaction Manager – MySQL
 
+![Code Coverage](.build/coverage_badge.svg)
+
 Lightweight module for generating safe and efficient MySQL statements:
 - INSERT
 - INSERT IGNORE

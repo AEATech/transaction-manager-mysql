@@ -49,7 +49,9 @@
             "/docker",
             "/tests",
             "/phpunit.xml",
-            "/phpstan.neon"
+            "/phpstan.neon",
+            "/.build",
+            "/.github"
         ]
     }
 }
