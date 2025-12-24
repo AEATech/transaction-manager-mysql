@@ -24,6 +24,7 @@
     "require": {
         "php": ">=8.2",
         "ext-pdo": "*",
+        "ext-pdo_mysql": "*",
         "aeatech/transaction-manager-common-transactions": "dev-main",
         "aeatech/transaction-manager-core": "dev-main"
     },

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "3dfd4a85b53062e4ef3fda4086b247d5",
+    "content-hash": "e3d1e4befcd39614880fdd93d8726fa3",
     "packages": [
         {
             "name": "aeatech/transaction-manager-common-transactions",
@@ -3482,7 +3482,8 @@
     "prefer-lowest": false,
     "platform": {
         "php": ">=8.2",
-        "ext-pdo": "*"
+        "ext-pdo": "*",
+        "ext-pdo_mysql": "*"
     },
     "platform-dev": {},
     "plugin-api-version": "2.9.0"
