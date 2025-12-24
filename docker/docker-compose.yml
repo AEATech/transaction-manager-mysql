@@ -35,9 +35,6 @@ services:
         working_dir: /app
         volumes:
             - ../../transaction-manager-mysql:/app:rw
-            - /home/${USER}/.ssh:/home/${USER}/.ssh:ro
-        extra_hosts:
-            - 'host.docker.internal:host-gateway'
         depends_on:
             - mysql-test-5.7
     mysql-test-8:
@@ -75,9 +72,6 @@ services:
         working_dir: /app
         volumes:
             - ../../transaction-manager-mysql:/app:rw
-            - /home/${USER}/.ssh:/home/${USER}/.ssh:ro
-        extra_hosts:
-            - 'host.docker.internal:host-gateway'
         depends_on:
             - mysql-test-8
     php-cli-8.3:
@@ -94,9 +88,6 @@ services:
         working_dir: /app
         volumes:
             - ../../transaction-manager-mysql:/app:rw
-            - /home/${USER}/.ssh:/home/${USER}/.ssh:ro
-        extra_hosts:
-            - 'host.docker.internal:host-gateway'
         depends_on:
             - mysql-test-8
     php-cli-8.4:
@@ -113,9 +104,6 @@ services:
         working_dir: /app
         volumes:
             - ../../transaction-manager-mysql:/app:rw
-            - /home/${USER}/.ssh:/home/${USER}/.ssh:ro
-        extra_hosts:
-            - 'host.docker.internal:host-gateway'
         depends_on:
             - mysql-test-8
 
