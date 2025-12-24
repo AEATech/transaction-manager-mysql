@@ -20,6 +20,9 @@ use InvalidArgumentException;
  */
 class DeleteWithLimitTransaction implements TransactionInterface
 {
+    /**
+     * @param array<int, mixed> $identifiers
+     */
     public function __construct(
         private readonly MySQLIdentifierQuoter $quoter,
         private readonly string $tableName,

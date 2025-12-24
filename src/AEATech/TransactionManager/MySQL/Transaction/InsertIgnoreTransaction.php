@@ -11,6 +11,10 @@ use AEATech\TransactionManager\TransactionInterface;
 
 class InsertIgnoreTransaction implements TransactionInterface
 {
+    /**
+     * @param array<array<string, mixed>> $rows
+     * @param array<string, int|string> $columnTypes
+     */
     public function __construct(
         private readonly InsertValuesBuilder $insertValuesBuilder,
         private readonly MySQLIdentifierQuoter $quoter,

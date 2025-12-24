@@ -15,6 +15,11 @@ use InvalidArgumentException;
  */
 class InsertOnDuplicateKeyUpdateTransaction implements TransactionInterface
 {
+    /**
+     * @param array<array<string, mixed>> $rows
+     * @param string[] $updateColumns
+     * @param array<string, int|string> $columnTypes
+     */
     public function __construct(
         private readonly InsertValuesBuilder $insertValuesBuilder,
         private readonly MySQLIdentifierQuoter $quoter,

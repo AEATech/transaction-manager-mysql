@@ -155,6 +155,11 @@ class MySQLErrorHeuristics implements DatabaseErrorHeuristicsInterface
 
     /**
      * Checks whether any of the given numeric error codes appears as a standalone token in the message.
+     *
+     * @param string $msg
+     * @param int[] $codes
+     *
+     * @return bool
      */
     private function containsAnyErrorCode(string $msg, array $codes): bool
     {
