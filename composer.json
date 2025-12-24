@@ -10,15 +10,15 @@
     "repositories": [
         {
             "type": "vcs",
-            "url": "git@github.com:Shahelm/transaction-manager-core.git"
+            "url": "git@github.com:AEATech/transaction-manager-core.git"
         },
         {
             "type": "vcs",
-            "url": "git@github.com:Shahelm/transaction-manager-doctrine-adapter.git"
+            "url": "git@github.com:AEATech/transaction-manager-doctrine-adapter.git"
         },
         {
             "type": "vcs",
-            "url": "git@github.com:Shahelm/transaction-manager-common-transactions.git"
+            "url": "git@github.com:AEATech/transaction-manager-common-transactions.git"
         }
     ],
     "require": {

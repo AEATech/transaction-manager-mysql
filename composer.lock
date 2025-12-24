@@ -4,20 +4,20 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "0fb3480bba8685875d31b3bee4bd74a2",
+    "content-hash": "ec23eaf300046125be2a340196ca7be9",
     "packages": [
         {
             "name": "aeatech/transaction-manager-common-transactions",
             "version": "dev-main",
             "source": {
                 "type": "git",
-                "url": "git@github.com:Shahelm/transaction-manager-common-transactions.git",
-                "reference": "9824a401337d5490d2b51c8590ba49742855cf29"
+                "url": "https://github.com/AEATech/transaction-manager-common-transactions.git",
+                "reference": "48e845fd3df80b01b223de489b35374b4b61082a"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Shahelm/transaction-manager-common-transactions/zipball/9824a401337d5490d2b51c8590ba49742855cf29",
-                "reference": "9824a401337d5490d2b51c8590ba49742855cf29",
+                "url": "https://api.github.com/repos/AEATech/transaction-manager-common-transactions/zipball/48e845fd3df80b01b223de489b35374b4b61082a",
+                "reference": "48e845fd3df80b01b223de489b35374b4b61082a",
                 "shasum": ""
             },
             "require": {
@@ -60,20 +60,24 @@
                 "transaction",
                 "transaction-manager"
             ],
-            "time": "2025-12-23T12:39:16+00:00"
+            "support": {
+                "source": "https://github.com/AEATech/transaction-manager-common-transactions/tree/main",
+                "issues": "https://github.com/AEATech/transaction-manager-common-transactions/issues"
+            },
+            "time": "2025-12-24T13:54:11+00:00"
         },
         {
             "name": "aeatech/transaction-manager-core",
             "version": "dev-main",
             "source": {
                 "type": "git",
-                "url": "git@github.com:Shahelm/transaction-manager-core.git",
-                "reference": "886c1b70d7d4d9cc6fc55a24e90e8b842ca943e1"
+                "url": "https://github.com/AEATech/transaction-manager-core.git",
+                "reference": "b64e7c3e3b6c0d3a53ac569253bbf44600c6d55c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Shahelm/transaction-manager-core/zipball/886c1b70d7d4d9cc6fc55a24e90e8b842ca943e1",
-                "reference": "886c1b70d7d4d9cc6fc55a24e90e8b842ca943e1",
+                "url": "https://api.github.com/repos/AEATech/transaction-manager-core/zipball/b64e7c3e3b6c0d3a53ac569253bbf44600c6d55c",
+                "reference": "b64e7c3e3b6c0d3a53ac569253bbf44600c6d55c",
                 "shasum": ""
             },
             "require": {
@@ -82,6 +86,7 @@
             },
             "require-dev": {
                 "mockery/mockery": "^1.6.10",
+                "phpstan/phpstan": "^2.1",
                 "phpunit/phpunit": "^11.5",
                 "roave/security-advisories": "dev-master"
             },
@@ -115,7 +120,11 @@
                 "transaction",
                 "transaction-manager"
             ],
-            "time": "2025-12-23T12:36:05+00:00"
+            "support": {
+                "source": "https://github.com/AEATech/transaction-manager-core/tree/main",
+                "issues": "https://github.com/AEATech/transaction-manager-core/issues"
+            },
+            "time": "2025-12-24T13:02:30+00:00"
         }
     ],
     "packages-dev": [
@@ -124,13 +133,13 @@
             "version": "dev-main",
             "source": {
                 "type": "git",
-                "url": "git@github.com:Shahelm/transaction-manager-doctrine-adapter.git",
-                "reference": "806201433e1ea595e36f49a106eae7425749b726"
+                "url": "https://github.com/AEATech/transaction-manager-doctrine-adapter.git",
+                "reference": "4ed6c65fe09e1e70641fc7d7edcdf633dc3cf2c5"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Shahelm/transaction-manager-doctrine-adapter/zipball/806201433e1ea595e36f49a106eae7425749b726",
-                "reference": "806201433e1ea595e36f49a106eae7425749b726",
+                "url": "https://api.github.com/repos/AEATech/transaction-manager-doctrine-adapter/zipball/4ed6c65fe09e1e70641fc7d7edcdf633dc3cf2c5",
+                "reference": "4ed6c65fe09e1e70641fc7d7edcdf633dc3cf2c5",
                 "shasum": ""
             },
             "require": {
@@ -177,7 +186,11 @@
                 "transaction",
                 "transaction-manager"
             ],
-            "time": "2025-12-23T12:39:16+00:00"
+            "support": {
+                "source": "https://github.com/AEATech/transaction-manager-doctrine-adapter/tree/main",
+                "issues": "https://github.com/AEATech/transaction-manager-doctrine-adapter/issues"
+            },
+            "time": "2025-12-24T13:28:53+00:00"
         },
         {
             "name": "doctrine/dbal",
