@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "6829884af9f30feb0a9c41e2cd2c7d85",
+    "content-hash": "3dfd4a85b53062e4ef3fda4086b247d5",
     "packages": [
         {
             "name": "aeatech/transaction-manager-common-transactions",
@@ -12,12 +12,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/AEATech/transaction-manager-common-transactions.git",
-                "reference": "48e845fd3df80b01b223de489b35374b4b61082a"
+                "reference": "65097f8fabdbe0d5ad775fae3a96574c0c1cbc2e"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/AEATech/transaction-manager-common-transactions/zipball/48e845fd3df80b01b223de489b35374b4b61082a",
-                "reference": "48e845fd3df80b01b223de489b35374b4b61082a",
+                "url": "https://api.github.com/repos/AEATech/transaction-manager-common-transactions/zipball/65097f8fabdbe0d5ad775fae3a96574c0c1cbc2e",
+                "reference": "65097f8fabdbe0d5ad775fae3a96574c0c1cbc2e",
                 "shasum": ""
             },
             "require": {
@@ -27,6 +27,8 @@
             },
             "require-dev": {
                 "mockery/mockery": "^1.6.10",
+                "phpstan/phpstan": "^2.1",
+                "phpstan/phpstan-mockery": "^2.0",
                 "phpunit/phpunit": "^11.5",
                 "roave/security-advisories": "dev-master"
             },
@@ -56,6 +58,7 @@
             "keywords": [
                 "MySQL",
                 "PostgreSQL",
+                "aeatech",
                 "database",
                 "transaction",
                 "transaction-manager"
@@ -64,7 +67,7 @@
                 "source": "https://github.com/AEATech/transaction-manager-common-transactions/tree/main",
                 "issues": "https://github.com/AEATech/transaction-manager-common-transactions/issues"
             },
-            "time": "2025-12-24T13:54:11+00:00"
+            "time": "2025-12-24T20:14:42+00:00"
         },
         {
             "name": "aeatech/transaction-manager-core",
@@ -72,12 +75,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/AEATech/transaction-manager-core.git",
-                "reference": "b64e7c3e3b6c0d3a53ac569253bbf44600c6d55c"
+                "reference": "53e6e4b2a95db25d95d4f2d2262e5c67286c2267"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/AEATech/transaction-manager-core/zipball/b64e7c3e3b6c0d3a53ac569253bbf44600c6d55c",
-                "reference": "b64e7c3e3b6c0d3a53ac569253bbf44600c6d55c",
+                "url": "https://api.github.com/repos/AEATech/transaction-manager-core/zipball/53e6e4b2a95db25d95d4f2d2262e5c67286c2267",
+                "reference": "53e6e4b2a95db25d95d4f2d2262e5c67286c2267",
                 "shasum": ""
             },
             "require": {
@@ -87,6 +90,7 @@
             "require-dev": {
                 "mockery/mockery": "^1.6.10",
                 "phpstan/phpstan": "^2.1",
+                "phpstan/phpstan-mockery": "^2.0",
                 "phpunit/phpunit": "^11.5",
                 "roave/security-advisories": "dev-master"
             },
@@ -106,7 +110,10 @@
                 "exclude": [
                     "/docker",
                     "/tests",
-                    "/phpunit.xml"
+                    "/phpunit.xml",
+                    "/phpstan.neon",
+                    "/.build",
+                    "/.github"
                 ]
             },
             "license": [
@@ -116,6 +123,7 @@
             "keywords": [
                 "MySQL",
                 "PostgreSQL",
+                "aeatech",
                 "database",
                 "transaction",
                 "transaction-manager"
@@ -124,7 +132,7 @@
                 "source": "https://github.com/AEATech/transaction-manager-core/tree/main",
                 "issues": "https://github.com/AEATech/transaction-manager-core/issues"
             },
-            "time": "2025-12-24T13:02:30+00:00"
+            "time": "2025-12-24T19:25:39+00:00"
         }
     ],
     "packages-dev": [
@@ -134,22 +142,25 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/AEATech/transaction-manager-doctrine-adapter.git",
-                "reference": "4ed6c65fe09e1e70641fc7d7edcdf633dc3cf2c5"
+                "reference": "47b7e6cbb752bec969457d27bea22de4e69e920c"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/AEATech/transaction-manager-doctrine-adapter/zipball/4ed6c65fe09e1e70641fc7d7edcdf633dc3cf2c5",
-                "reference": "4ed6c65fe09e1e70641fc7d7edcdf633dc3cf2c5",
+                "url": "https://api.github.com/repos/AEATech/transaction-manager-doctrine-adapter/zipball/47b7e6cbb752bec969457d27bea22de4e69e920c",
+                "reference": "47b7e6cbb752bec969457d27bea22de4e69e920c",
                 "shasum": ""
             },
             "require": {
                 "aeatech/transaction-manager-core": "dev-main",
                 "doctrine/dbal": "^3.7 || ^4.0",
+                "ext-pdo": "*",
                 "php": ">=8.2"
             },
             "require-dev": {
                 "mockery/mockery": "^1.6.10",
                 "phpbench/phpbench": "^1.4",
+                "phpstan/phpstan": "^2.1",
+                "phpstan/phpstan-mockery": "^2.0",
                 "phpunit/phpunit": "^11.5",
                 "roave/security-advisories": "dev-master"
             },
@@ -172,7 +183,10 @@
                     "/tests",
                     "/phpunit.xml",
                     "/phpbench.json",
-                    "/benchmarks"
+                    "/benchmarks",
+                    "/phpstan.neon",
+                    "/.build",
+                    "/.github"
                 ]
             },
             "license": [
@@ -182,6 +196,7 @@
             "keywords": [
                 "MySQL",
                 "PostgreSQL",
+                "aeatech",
                 "database",
                 "transaction",
                 "transaction-manager"
@@ -190,7 +205,7 @@
                 "source": "https://github.com/AEATech/transaction-manager-doctrine-adapter/tree/main",
                 "issues": "https://github.com/AEATech/transaction-manager-doctrine-adapter/issues"
             },
-            "time": "2025-12-24T13:28:53+00:00"
+            "time": "2025-12-24T20:02:20+00:00"
         },
         {
             "name": "doctrine/dbal",
@@ -770,36 +785,85 @@
             "time": "2025-12-05T10:24:31+00:00"
         },
         {
-            "name": "phpunit/php-code-coverage",
-            "version": "11.0.11",
+            "name": "phpstan/phpstan-mockery",
+            "version": "2.0.0",
             "source": {
                 "type": "git",
-                "url": "https://github.com/sebastianbergmann/php-code-coverage.git",
-                "reference": "4f7722aa9a7b76aa775e2d9d4e95d1ea16eeeef4"
+                "url": "https://github.com/phpstan/phpstan-mockery.git",
+                "reference": "89a949d0ac64298e88b7c7fa00caee565c198394"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/4f7722aa9a7b76aa775e2d9d4e95d1ea16eeeef4",
-                "reference": "4f7722aa9a7b76aa775e2d9d4e95d1ea16eeeef4",
+                "url": "https://api.github.com/repos/phpstan/phpstan-mockery/zipball/89a949d0ac64298e88b7c7fa00caee565c198394",
+                "reference": "89a949d0ac64298e88b7c7fa00caee565c198394",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^7.4 || ^8.0",
+                "phpstan/phpstan": "^2.0"
+            },
+            "require-dev": {
+                "mockery/mockery": "^1.6.11",
+                "php-parallel-lint/php-parallel-lint": "^1.2",
+                "phpstan/phpstan-phpunit": "^2.0",
+                "phpstan/phpstan-strict-rules": "^2.0",
+                "phpunit/phpunit": "^9.6"
+            },
+            "type": "phpstan-extension",
+            "extra": {
+                "phpstan": {
+                    "includes": [
+                        "extension.neon"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "PHPStan\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "description": "PHPStan Mockery extension",
+            "support": {
+                "issues": "https://github.com/phpstan/phpstan-mockery/issues",
+                "source": "https://github.com/phpstan/phpstan-mockery/tree/2.0.0"
+            },
+            "time": "2024-10-14T03:18:12+00:00"
+        },
+        {
+            "name": "phpunit/php-code-coverage",
+            "version": "11.0.12",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/sebastianbergmann/php-code-coverage.git",
+                "reference": "2c1ed04922802c15e1de5d7447b4856de949cf56"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/sebastianbergmann/php-code-coverage/zipball/2c1ed04922802c15e1de5d7447b4856de949cf56",
+                "reference": "2c1ed04922802c15e1de5d7447b4856de949cf56",
                 "shasum": ""
             },
             "require": {
                 "ext-dom": "*",
                 "ext-libxml": "*",
                 "ext-xmlwriter": "*",
-                "nikic/php-parser": "^5.4.0",
+                "nikic/php-parser": "^5.7.0",
                 "php": ">=8.2",
                 "phpunit/php-file-iterator": "^5.1.0",
                 "phpunit/php-text-template": "^4.0.1",
                 "sebastian/code-unit-reverse-lookup": "^4.0.1",
                 "sebastian/complexity": "^4.0.1",
-                "sebastian/environment": "^7.2.0",
+                "sebastian/environment": "^7.2.1",
                 "sebastian/lines-of-code": "^3.0.1",
                 "sebastian/version": "^5.0.2",
-                "theseer/tokenizer": "^1.2.3"
+                "theseer/tokenizer": "^1.3.1"
             },
             "require-dev": {
-                "phpunit/phpunit": "^11.5.2"
+                "phpunit/phpunit": "^11.5.46"
             },
             "suggest": {
                 "ext-pcov": "PHP extension that provides line coverage",
@@ -837,7 +901,7 @@
             "support": {
                 "issues": "https://github.com/sebastianbergmann/php-code-coverage/issues",
                 "security": "https://github.com/sebastianbergmann/php-code-coverage/security/policy",
-                "source": "https://github.com/sebastianbergmann/php-code-coverage/tree/11.0.11"
+                "source": "https://github.com/sebastianbergmann/php-code-coverage/tree/11.0.12"
             },
             "funding": [
                 {
@@ -857,7 +921,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2025-08-27T14:37:49+00:00"
+            "time": "2025-12-24T07:01:01+00:00"
         },
         {
             "name": "phpunit/php-file-iterator",
@@ -1318,12 +1382,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/Roave/SecurityAdvisories.git",
-                "reference": "4400137eb61cd0db3192a409353ae83e811395fe"
+                "reference": "11f7ca6b5f4e115b64cf9aa8af60c2211bfadf56"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/Roave/SecurityAdvisories/zipball/4400137eb61cd0db3192a409353ae83e811395fe",
-                "reference": "4400137eb61cd0db3192a409353ae83e811395fe",
+                "url": "https://api.github.com/repos/Roave/SecurityAdvisories/zipball/11f7ca6b5f4e115b64cf9aa8af60c2211bfadf56",
+                "reference": "11f7ca6b5f4e115b64cf9aa8af60c2211bfadf56",
                 "shasum": ""
             },
             "conflict": {
@@ -1345,6 +1409,7 @@
                 "alextselegidis/easyappointments": "<1.5.2.0-beta1",
                 "alexusmai/laravel-file-manager": "<=3.3.1",
                 "alt-design/alt-redirect": "<1.6.4",
+                "altcha-org/altcha": "<1.3.1",
                 "alterphp/easyadmin-extension-bundle": ">=1.2,<1.2.11|>=1.3,<1.3.1",
                 "amazing/media2click": ">=1,<1.3.3",
                 "ameos/ameos_tarteaucitron": "<1.2.23",
@@ -1368,15 +1433,15 @@
                 "athlon1600/php-proxy-app": "<=3",
                 "athlon1600/youtube-downloader": "<=4",
                 "austintoddj/canvas": "<=3.4.2",
-                "auth0/auth0-php": ">=3.3,<=8.16",
-                "auth0/login": "<=7.18",
-                "auth0/symfony": "<=5.4.1",
-                "auth0/wordpress": "<=5.3",
+                "auth0/auth0-php": ">=3.3,<8.18",
+                "auth0/login": "<7.20",
+                "auth0/symfony": "<=5.5",
+                "auth0/wordpress": "<=5.4",
                 "automad/automad": "<2.0.0.0-alpha5",
                 "automattic/jetpack": "<9.8",
                 "awesome-support/awesome-support": "<=6.0.7",
-                "aws/aws-sdk-php": "<3.288.1",
-                "azuracast/azuracast": "<0.18.3",
+                "aws/aws-sdk-php": "<3.368",
+                "azuracast/azuracast": "<=0.23.1",
                 "b13/seo_basics": "<0.8.2",
                 "backdrop/backdrop": "<=1.32",
                 "backpack/crud": "<3.4.9",
@@ -1415,6 +1480,7 @@
                 "bvbmedia/multishop": "<2.0.39",
                 "bytefury/crater": "<6.0.2",
                 "cachethq/cachet": "<2.5.1",
+                "cadmium-org/cadmium-cms": "<=0.4.9",
                 "cakephp/cakephp": "<3.10.3|>=4,<4.0.10|>=4.1,<4.1.4|>=4.2,<4.2.12|>=4.3,<4.3.11|>=4.4,<4.4.10",
                 "cakephp/database": ">=4.2,<4.2.12|>=4.3,<4.3.11|>=4.4,<4.4.10",
                 "cardgate/magento2": "<2.0.33",
@@ -1594,6 +1660,7 @@
                 "floriangaerber/magnesium": "<0.3.1",
                 "fluidtypo3/vhs": "<5.1.1",
                 "fof/byobu": ">=0.3.0.0-beta2,<1.1.7",
+                "fof/pretty-mail": "<=1.1.2",
                 "fof/upload": "<1.2.3",
                 "foodcoopshop/foodcoopshop": ">=3.2,<3.6.1",
                 "fooman/tcpdf": "<6.2.22",
@@ -1740,7 +1807,7 @@
                 "leantime/leantime": "<3.3",
                 "lexik/jwt-authentication-bundle": "<2.10.7|>=2.11,<2.11.3",
                 "libreform/libreform": ">=2,<=2.0.8",
-                "librenms/librenms": "<25.11",
+                "librenms/librenms": "<25.12",
                 "liftkit/database": "<2.13.2",
                 "lightsaml/lightsaml": "<1.3.5",
                 "limesurvey/limesurvey": "<6.5.12",
@@ -1794,6 +1861,7 @@
                 "microsoft/microsoft-graph-core": "<2.0.2",
                 "microweber/microweber": "<=2.0.19",
                 "mikehaertl/php-shellcommand": "<1.6.1",
+                "mineadmin/mineadmin": "<=3.0.9",
                 "miniorange/miniorange-saml": "<1.4.3",
                 "mittwald/typo3_forum": "<1.2.1",
                 "mobiledetect/mobiledetectlib": "<2.8.32",
@@ -2311,7 +2379,7 @@
                     "type": "tidelift"
                 }
             ],
-            "time": "2025-12-10T19:05:59+00:00"
+            "time": "2025-12-23T20:06:05+00:00"
         },
         {
             "name": "sebastian/cli-parser",

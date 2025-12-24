@@ -366,7 +366,7 @@ class TransactionsFactory
      * @param array<int|string, mixed> $params
      *        Positional (`[0 => ...]`) or named (`[':foo' => ...]`) parameters
      *        compatible with the underlying DBAL/driver.
-     * @param array<int|string, int|string> $types
+     * @param array<string, mixed> $types
      *        Optional parameter types, e.g., Doctrine DBAL type constants, or
      *        `PDO::PARAM_*` values, depending on the adapter.
      * @param bool $isIdempotent
