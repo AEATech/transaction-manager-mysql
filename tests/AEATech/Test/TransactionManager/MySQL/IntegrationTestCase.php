@@ -22,8 +22,8 @@ use Throwable;
 
 abstract class IntegrationTestCase extends TestCase
 {
-    private static ?Connection $raw = null;
-    private static ?TransactionManager $tm = null;
+    private static Connection $raw;
+    private static TransactionManager $tm;
 
     /**
      * PHPUnit lifecycle: prepare shared instances.
@@ -68,6 +68,8 @@ abstract class IntegrationTestCase extends TestCase
     /**
      * Creates Doctrine DBAL connection for tests.
      * Do not call directly, use db() for a shared instance.
+     *
+     * @param array<string, mixed> $overrideParams
      */
     protected static function makeDbalConnection(array $overrideParams = []): Connection
     {
@@ -101,6 +103,9 @@ abstract class IntegrationTestCase extends TestCase
     {
         $conn = self::db();
 
+        /**
+         * @var string[] $tables
+         */
         $tables = $conn->fetchFirstColumn(
             "SELECT TABLE_NAME FROM information_schema.tables WHERE table_schema = DATABASE()"
         );
@@ -129,15 +134,10 @@ abstract class IntegrationTestCase extends TestCase
      */
     public static function tearDownAfterClass(): void
     {
-        if (self::$raw) {
-            try {
-                self::$raw->close();
-            } catch (Throwable) {
-                // ignore
-            }
+        try {
+            self::$raw->close();
+        } catch (Throwable) {
+            // ignore
         }
-
-        self::$tm = null;
-        self::$raw = null;
     }
 }

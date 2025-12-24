@@ -18,7 +18,7 @@ class InsertOnDuplicateKeyUpdateTransactionFactory
     /**
      * @param array<array<string, mixed>> $rows
      * @param string[] $updateColumns
-     * @param array<string, int|string> $columnTypes
+     * @param array<string, mixed> $columnTypes
      */
     public function factory(
         string $tableName,

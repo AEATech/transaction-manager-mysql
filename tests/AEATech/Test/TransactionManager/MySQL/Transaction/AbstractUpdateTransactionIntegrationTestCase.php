@@ -74,6 +74,8 @@ abstract class AbstractUpdateTransactionIntegrationTestCase extends IntegrationT
     }
 
     /**
+     * @param array<int, array<string, mixed>> $expected
+     *
      * @throws Throwable
      */
     protected static function assertState(array $expected): void

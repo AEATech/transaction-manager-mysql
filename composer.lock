@@ -12,12 +12,12 @@
             "source": {
                 "type": "git",
                 "url": "https://github.com/AEATech/transaction-manager-common-transactions.git",
-                "reference": "65097f8fabdbe0d5ad775fae3a96574c0c1cbc2e"
+                "reference": "f44692ca2c618bcdbb5db345364aa14a01853375"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/AEATech/transaction-manager-common-transactions/zipball/65097f8fabdbe0d5ad775fae3a96574c0c1cbc2e",
-                "reference": "65097f8fabdbe0d5ad775fae3a96574c0c1cbc2e",
+                "url": "https://api.github.com/repos/AEATech/transaction-manager-common-transactions/zipball/f44692ca2c618bcdbb5db345364aa14a01853375",
+                "reference": "f44692ca2c618bcdbb5db345364aa14a01853375",
                 "shasum": ""
             },
             "require": {
@@ -67,7 +67,7 @@
                 "source": "https://github.com/AEATech/transaction-manager-common-transactions/tree/main",
                 "issues": "https://github.com/AEATech/transaction-manager-common-transactions/issues"
             },
-            "time": "2025-12-24T20:14:42+00:00"
+            "time": "2025-12-24T21:32:54+00:00"
         },
         {
             "name": "aeatech/transaction-manager-core",

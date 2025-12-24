@@ -45,10 +45,18 @@ class MySQLErrorHeuristicsTest extends TestCase
     }
 
     #[Test]
-    #[DataProvider('connectionIssueMessageProvider')]
+    #[DataProvider('connectionIssueMessageDataProvider')]
     public function isConnectionIssueByMessageSubstring(string $message): void
     {
         self::assertTrue($this->heuristics->isConnectionIssue(null, null, $message));
+    }
+
+    public static function connectionIssueMessageDataProvider(): array
+    {
+        return [
+            'server has gone away' => ['MySQL server has gone away'],
+            'connection reset' => ['Connection reset by peer during write'],
+        ];
     }
 
     #[Test]
@@ -77,31 +85,23 @@ class MySQLErrorHeuristicsTest extends TestCase
     }
 
     #[Test]
-    #[DataProvider('transientIssueMessageProvider')]
+    #[DataProvider('transientIssueMessageDataProvider')]
     public function isTransientIssueByMessageSubstring(string $message): void
     {
         self::assertTrue($this->heuristics->isTransientIssue(null, null, $message));
+    }
+
+    public static function transientIssueMessageDataProvider(): array
+    {
+        return [
+            'deadlock' => ['deadlock found when trying to get lock'],
+            'lock wait timeout' => ['Lock wait timeout exceeded; try restarting transaction'],
+        ];
     }
 
     #[Test]
     public function isNotTransientIssueWhenNoSignals(): void
     {
         $this->assertFalse($this->heuristics->isTransientIssue('42000', 1064, 'syntax error near select'));
-    }
-
-    public static function connectionIssueMessageProvider(): array
-    {
-        return [
-            'server has gone away' => ['MySQL server has gone away'],
-            'connection reset' => ['Connection reset by peer during write'],
-        ];
-    }
-
-    public static function transientIssueMessageProvider(): array
-    {
-        return [
-            'deadlock' => ['deadlock found when trying to get lock'],
-            'lock wait timeout' => ['Lock wait timeout exceeded; try restarting transaction'],
-        ];
     }
 }

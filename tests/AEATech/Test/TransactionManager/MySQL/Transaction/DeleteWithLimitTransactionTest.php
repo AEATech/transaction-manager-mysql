@@ -52,7 +52,7 @@ class DeleteWithLimitTransactionTest extends TestCase
     }
 
     #[Test]
-    #[DataProvider('invalidLimits')]
+    #[DataProvider('invalidLimitsDataProvider')]
     public function constructorThrowsWhenLimitNotPositive(int $limit): void
     {
         $this->expectException(InvalidArgumentException::class);
@@ -61,7 +61,7 @@ class DeleteWithLimitTransactionTest extends TestCase
         new DeleteWithLimitTransaction(new MySQLIdentifierQuoter(), 't', 'id', 1, [1], $limit);
     }
 
-    public static function invalidLimits(): array
+    public static function invalidLimitsDataProvider(): array
     {
         return [
             ['limit' => 0],

@@ -262,7 +262,8 @@ PHPCHILD;
         ];
 
         $cmd = 'php -r ' . escapeshellarg($childCode);
-        $proc = proc_open($cmd, $descriptorSpec, $pipes, getcwd());
+        $cwd = getcwd();
+        $proc = proc_open($cmd, $descriptorSpec, $pipes, $cwd === false ? null : $cwd);
 
         if (!is_resource($proc)) {
             $this->markTestSkipped('Failed to start child php process');
@@ -281,10 +282,12 @@ SQL
         $start = microtime(true);
 
         do {
-                $ready = (int)self::db()->executeQuery(<<<SQL
+            $result = self::db()->executeQuery(<<<SQL
 SELECT COUNT(*) c FROM tm_sync WHERE k = 'child_ready'
 SQL
 )->fetchOne();
+
+            $ready = is_numeric($result) ? (int)$result : 0;
 
             if ($ready > 0) {
                 break;
@@ -324,18 +327,27 @@ SQL
             /** @noinspection JsonEncodingApiUsageInspection */
             $decoded = json_decode($childOut, true);
 
-            if (is_array($decoded) && ($decoded['message'] ?? null)) {
+            if (is_array($decoded) && isset($decoded['message'])) {
                 $payload = $decoded;
             }
         }
 
         if ($candidate === null && is_array($payload)) {
-            $code = $payload['driverCode'] ?? ($payload['code'] ?? 0);
-            $intCode = is_int($code) ? $code : 0;
-            $pe = new PDOException($payload['message'] ?? 'deadlock', $intCode);
-            $sqlstate = $payload['sqlstate'] ?? null;
-            $driverCode = is_int($payload['driverCode'] ?? null) ? (int)$payload['driverCode'] : null;
-            $pe->errorInfo = [$sqlstate, $driverCode, $payload['message'] ?? null];
+            $driverCode = $payload['driverCode'] ?? null;
+            $intCode = is_int($driverCode)
+                ? $driverCode
+                : (int) ($payload['code'] ?? 0);
+
+            /**
+             * @var array{message: string, sqlstate?: string, driverCode?: int}$payload
+             */
+            $pe = new PDOException($payload['message'], $intCode);
+            $pe->errorInfo = [
+                $payload['sqlstate'] ?? null,
+                is_int($driverCode) ? $driverCode : null,
+                $payload['message']
+            ];
+
             $candidate = $pe;
         }
 

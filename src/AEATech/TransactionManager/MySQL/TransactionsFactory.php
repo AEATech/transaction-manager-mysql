@@ -275,7 +275,7 @@ class TransactionsFactory
      *           email = VALUES(email),
      *           name  = VALUES(name)
      *
-     * @param array<string, int|string> $columnTypes
+     * @param array<string, mixed> $columnTypes
      *   Optional mapping of column name => Doctrine DBAL parameter type.
      *   Same semantics as in {@see createInsert()}.
      *
@@ -366,7 +366,7 @@ class TransactionsFactory
      * @param array<int|string, mixed> $params
      *        Positional (`[0 => ...]`) or named (`[':foo' => ...]`) parameters
      *        compatible with the underlying DBAL/driver.
-     * @param array<string, mixed> $types
+     * @param array<int|string, mixed> $types
      *        Optional parameter types, e.g., Doctrine DBAL type constants, or
      *        `PDO::PARAM_*` values, depending on the adapter.
      * @param bool $isIdempotent

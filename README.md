@@ -366,9 +366,9 @@ for v in 8.2 8.3 8.4 8.2-mysql-5.7 ; do \
 done
 ```
 
-## 4. Run phpstan
+## Run phpstan
 ```bash
-docker-compose -p aeatech-transaction-manager-mysql -f docker/docker-compose.yml exec php-cli-8.4 vendor/bin/phpstan analyse -c phpstan.neon
+docker-compose -p aeatech-transaction-manager-mysql -f docker/docker-compose.yml exec php-cli-8.4 vendor/bin/phpstan analyse -c phpstan.neon --memory-limit=1G
 ```
 
 ## Stopping the Environment
