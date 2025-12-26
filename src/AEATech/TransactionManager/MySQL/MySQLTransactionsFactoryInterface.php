@@ -3,57 +3,15 @@ declare(strict_types=1);
 
 namespace AEATech\TransactionManager\MySQL;
 
-use AEATech\TransactionManager\MySQL\Transaction\DeleteWithLimitTransactionFactory;
-use AEATech\TransactionManager\MySQL\Transaction\InsertIgnoreTransactionFactory;
-use AEATech\TransactionManager\MySQL\Transaction\InsertOnDuplicateKeyUpdateTransactionFactory;
 use AEATech\TransactionManager\StatementReusePolicy;
-use AEATech\TransactionManager\Transaction\DeleteTransactionFactory;
-use AEATech\TransactionManager\Transaction\InsertTransactionFactory;
-use AEATech\TransactionManager\Transaction\SqlTransaction;
-use AEATech\TransactionManager\Transaction\UpdateTransactionFactory;
-use AEATech\TransactionManager\Transaction\UpdateWhenThenTransactionFactory;
 use AEATech\TransactionManager\TransactionInterface;
 use InvalidArgumentException;
 
 /**
  * Convenience facade for creating MySQL-specific TransactionInterface instances.
- *
- * This class hides low-level details (InsertValuesBuilder, InsertMode, etc.)
- * behind a small set of high-level factory methods.
- *
- * Typical usage:
- *
- * $transactions = new TransactionsFactory(
- *     insertTransactionFactory: $insertTransactionFactory,
- *     insertIgnoreTransactionFactory: $insertIgnoreTransactionFactory,
- *     ...,
- * );
- *
- * $tx = $transactions->createInsert(
- *     tableName: 'users',
- *     rows: [
- *         ['id' => 1, 'email' => 'foo@example.com'],
- *         ['id' => 2, 'email' => 'bar@example.com'],
- *     ],
- *     columnTypes: ['id' => \PDO::PARAM_INT],
- *     isIdempotent: false,
- * );
- *
- * $runResult = $transactionManager->run($tx, $options);
  */
-class TransactionsFactory
+interface MySQLTransactionsFactoryInterface
 {
-    public function __construct(
-        private readonly InsertTransactionFactory $insertTransactionFactory,
-        private readonly InsertIgnoreTransactionFactory $insertIgnoreTransactionFactory,
-        private readonly InsertOnDuplicateKeyUpdateTransactionFactory $insertOnDuplicateKeyUpdateTransactionFactory,
-        private readonly DeleteTransactionFactory $deleteTransactionFactory,
-        private readonly DeleteWithLimitTransactionFactory $deleteWithLimitTransactionFactory,
-        private readonly UpdateTransactionFactory $updateTransactionFactory,
-        private readonly UpdateWhenThenTransactionFactory $updateWhenThenTransactionFactory,
-    ) {
-    }
-
     /**
      * Creates an INSERT transaction:
      *
@@ -138,15 +96,7 @@ class TransactionsFactory
         array $columnTypes = [],
         bool $isIdempotent = false,
         StatementReusePolicy $statementReusePolicy = StatementReusePolicy::None
-    ): TransactionInterface {
-        return $this->insertTransactionFactory->factory(
-            tableName: $tableName,
-            rows: $rows,
-            columnTypes: $columnTypes,
-            isIdempotent: $isIdempotent,
-            statementReusePolicy: $statementReusePolicy
-        );
-    }
+    ): TransactionInterface;
 
     /**
      * Creates an INSERT IGNORE transaction:
@@ -208,15 +158,7 @@ class TransactionsFactory
         array $columnTypes = [],
         bool $isIdempotent = false,
         StatementReusePolicy $statementReusePolicy = StatementReusePolicy::None
-    ): TransactionInterface {
-        return $this->insertIgnoreTransactionFactory->factory(
-            tableName: $tableName,
-            rows: $rows,
-            columnTypes: $columnTypes,
-            isIdempotent: $isIdempotent,
-            statementReusePolicy: $statementReusePolicy
-        );
-    }
+    ): TransactionInterface;
 
     /**
      * Creates an INSERT ... ON DUPLICATE KEY UPDATE transaction:
@@ -319,16 +261,7 @@ class TransactionsFactory
         array $columnTypes = [],
         bool $isIdempotent = false,
         StatementReusePolicy $statementReusePolicy = StatementReusePolicy::None
-    ): TransactionInterface {
-        return $this->insertOnDuplicateKeyUpdateTransactionFactory->factory(
-            tableName: $tableName,
-            rows: $rows,
-            updateColumns: $updateColumns,
-            columnTypes: $columnTypes,
-            isIdempotent: $isIdempotent,
-            statementReusePolicy: $statementReusePolicy
-        );
-    }
+    ): TransactionInterface;
 
     /**
      * Create a transaction that wraps *raw* SQL provided by the caller.
@@ -387,9 +320,7 @@ class TransactionsFactory
         array $types = [],
         bool $isIdempotent = false,
         StatementReusePolicy $statementReusePolicy = StatementReusePolicy::None
-    ): TransactionInterface {
-        return new SqlTransaction($sql, $params, $types, $isIdempotent, $statementReusePolicy);
-    }
+    ): TransactionInterface;
 
     /**
      * Creates a DELETE transaction by identifier column:
@@ -455,16 +386,7 @@ class TransactionsFactory
         array $identifiers,
         bool $isIdempotent = true,
         StatementReusePolicy $statementReusePolicy = StatementReusePolicy::None
-    ): TransactionInterface {
-        return $this->deleteTransactionFactory->factory(
-            tableName: $tableName,
-            identifierColumn: $identifierColumn,
-            identifierColumnType: $identifierColumnType,
-            identifiers: $identifiers,
-            isIdempotent: $isIdempotent,
-            statementReusePolicy: $statementReusePolicy
-        );
-    }
+    ): TransactionInterface;
 
     /**
      * Creates a MySQL-specific DELETE transaction with LIMIT support:
@@ -532,17 +454,7 @@ class TransactionsFactory
         int $limit,
         bool $isIdempotent = true,
         StatementReusePolicy $statementReusePolicy = StatementReusePolicy::None
-    ): TransactionInterface {
-        return $this->deleteWithLimitTransactionFactory->factory(
-            tableName: $tableName,
-            identifierColumn: $identifierColumn,
-            identifierColumnType: $identifierColumnType,
-            identifiers: $identifiers,
-            limit: $limit,
-            isIdempotent: $isIdempotent,
-            statementReusePolicy: $statementReusePolicy
-        );
-    }
+    ): TransactionInterface;
 
     /**
      * Creates a bulk UPDATE transaction that applies the same column values to
@@ -620,18 +532,7 @@ class TransactionsFactory
         array $columnTypes = [],
         bool $isIdempotent = true,
         StatementReusePolicy $statementReusePolicy = StatementReusePolicy::None
-    ): TransactionInterface {
-        return $this->updateTransactionFactory->factory(
-            tableName: $tableName,
-            identifierColumn: $identifierColumn,
-            identifierColumnType: $identifierColumnType,
-            identifiers: $identifiers,
-            columnsWithValuesForUpdate: $columnsWithValuesForUpdate,
-            columnTypes: $columnTypes,
-            isIdempotent: $isIdempotent,
-            statementReusePolicy: $statementReusePolicy
-        );
-    }
+    ): TransactionInterface;
 
     /**
      * Creates a CASE-based bulk UPDATE transaction that assigns different
@@ -742,16 +643,5 @@ class TransactionsFactory
         array $updateColumnTypes = [],
         bool $isIdempotent = true,
         StatementReusePolicy $statementReusePolicy = StatementReusePolicy::None
-    ): TransactionInterface {
-        return $this->updateWhenThenTransactionFactory->factory(
-            tableName: $tableName,
-            rows: $rows,
-            identifierColumn: $identifierColumn,
-            identifierColumnType: $identifierColumnType,
-            updateColumns: $updateColumns,
-            updateColumnTypes: $updateColumnTypes,
-            isIdempotent: $isIdempotent,
-            statementReusePolicy: $statementReusePolicy
-        );
-    }
+    ): TransactionInterface;
 }

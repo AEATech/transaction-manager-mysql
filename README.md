@@ -29,18 +29,8 @@ use AEATech\TransactionManager\DoctrineAdapter\DbalMysqlConnectionAdapter;
 use AEATech\TransactionManager\ExecutionPlanBuilder;
 use AEATech\TransactionManager\ExponentialBackoff;
 use AEATech\TransactionManager\IsolationLevel;
-use AEATech\TransactionManager\MySQL\MySQLIdentifierQuoter;
-use AEATech\TransactionManager\Transaction\Internal\InsertValuesBuilder;
-use AEATech\TransactionManager\Transaction\Internal\UpdateWhenThenDefinitionsBuilder;
-use AEATech\TransactionManager\MySQL\Transaction\InsertIgnoreTransactionFactory;
 use AEATech\TransactionManager\MySQL\MySQLErrorClassifier;
-use AEATech\TransactionManager\MySQL\Transaction\InsertOnDuplicateKeyUpdateTransactionFactory;
-use AEATech\TransactionManager\MySQL\Transaction\DeleteWithLimitTransactionFactory;
-use AEATech\TransactionManager\MySQL\Transaction\InsertTransactionFactory;
-use AEATech\TransactionManager\MySQL\TransactionsFactory as MySqlTxFactory;
-use AEATech\TransactionManager\Transaction\DeleteTransactionFactory;
-use AEATech\TransactionManager\Transaction\UpdateTransactionFactory;
-use AEATech\TransactionManager\Transaction\UpdateWhenThenTransactionFactory;
+use AEATech\TransactionManager\MySQL\MySQLTransactionsFactoryBuilder;
 use AEATech\TransactionManager\RetryPolicy;
 use AEATech\TransactionManager\SystemSleeper;
 use AEATech\TransactionManager\TransactionManager;
@@ -59,29 +49,8 @@ $tm = new TransactionManager(
     sleeper: new SystemSleeper(),
 );
 
-// 3) Create the MySQL transactions factory
-$quoter = new MySQLIdentifierQuoter();
-$insertValuesBuilder = new InsertValuesBuilder();
-$updateWhenThenDefs = new UpdateWhenThenDefinitionsBuilder();
-
-$txFactory = new MySqlTxFactory(
-    insertTransactionFactory: new InsertTransactionFactory(
-        $insertValuesBuilder,
-        $quoter,
-    ),
-    insertIgnoreTransactionFactory: new InsertIgnoreTransactionFactory(
-        $insertValuesBuilder,
-        $quoter,
-    ),
-    insertOnDuplicateKeyUpdateTransactionFactory: new InsertOnDuplicateKeyUpdateTransactionFactory(
-        $insertValuesBuilder,
-        $quoter,
-    ),
-    deleteTransactionFactory: new DeleteTransactionFactory($quoter),
-    deleteWithLimitTransactionFactory: new DeleteWithLimitTransactionFactory($quoter),
-    updateTransactionFactory: new UpdateTransactionFactory($quoter),
-    updateWhenThenTransactionFactory: new UpdateWhenThenTransactionFactory($updateWhenThenDefs, $quoter),
-);
+// 3) Create the MySQL transactions factory using the builder:
+$txFactory = MySQLTransactionsFactoryBuilder::build();
 
 // 4) Example: regular INSERT
 $tx = $txFactory->createInsert(

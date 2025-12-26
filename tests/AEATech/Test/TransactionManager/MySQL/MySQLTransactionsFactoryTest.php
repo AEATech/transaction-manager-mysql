@@ -19,15 +19,15 @@ use AEATech\TransactionManager\Transaction\SqlTransaction;
 use AEATech\TransactionManager\Transaction\DeleteTransactionFactory;
 use AEATech\TransactionManager\Transaction\UpdateTransactionFactory;
 use AEATech\TransactionManager\Transaction\UpdateWhenThenTransactionFactory;
-use AEATech\TransactionManager\MySQL\TransactionsFactory;
+use AEATech\TransactionManager\MySQL\MySQLTransactionsFactory;
 use Mockery as m;
 use Mockery\Adapter\Phpunit\MockeryPHPUnitIntegration;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
 use PHPUnit\Framework\TestCase;
 
-#[CoversClass(TransactionsFactory::class)]
-class TransactionsFactoryTest extends TestCase
+#[CoversClass(MySQLTransactionsFactory::class)]
+class MySQLTransactionsFactoryTest extends TestCase
 {
     use MockeryPHPUnitIntegration;
 
@@ -38,7 +38,7 @@ class TransactionsFactoryTest extends TestCase
     private DeleteWithLimitTransactionFactory&m\MockInterface $deleteWithLimitFactory;
     private UpdateTransactionFactory&m\MockInterface $updateFactory;
     private UpdateWhenThenTransactionFactory&m\MockInterface $updateWhenThenFactory;
-    private TransactionsFactory $transactionsFactory;
+    private MySQLTransactionsFactory $transactionsFactory;
 
     protected function setUp(): void
     {
@@ -52,7 +52,7 @@ class TransactionsFactoryTest extends TestCase
         $this->updateFactory = m::mock(UpdateTransactionFactory::class);
         $this->updateWhenThenFactory = m::mock(UpdateWhenThenTransactionFactory::class);
 
-        $this->transactionsFactory = new TransactionsFactory(
+        $this->transactionsFactory = new MySQLTransactionsFactory(
             $this->insertFactory,
             $this->insertIgnoreFactory,
             $this->upsertFactory,
