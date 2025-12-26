@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace AEATech\Test\TransactionManager\MySQL;
 
+use AEATech\TransactionManager\MySQL\MySQLTransactionsFactory;
 use AEATech\TransactionManager\MySQL\MySQLTransactionsFactoryBuilder;
 use PHPUnit\Framework\Attributes\CoversClass;
 use PHPUnit\Framework\Attributes\Test;
@@ -14,6 +15,6 @@ class MySQLTransactionsFactoryBuilderTest extends TestCase
     #[Test]
     public function build(): void
     {
-        MySQLTransactionsFactoryBuilder::build();
+        self::assertInstanceOf(MySQLTransactionsFactory::class, MySQLTransactionsFactoryBuilder::build());
     }
 }

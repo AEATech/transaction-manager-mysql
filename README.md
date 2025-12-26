@@ -14,6 +14,7 @@ For Doctrine DBAL users, there is an adapter package: `aeatech/transaction-manag
 System requirements:
 - PHP >= 8.2
 - ext-pdo
+- ext-pdo_mysql
 - MySQL 5.7+ or 8.x
 
 Installation (Composer):
