@@ -7,29 +7,15 @@
     "config": {
         "sort-packages": true
     },
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "https://github.com/AEATech/transaction-manager-core.git"
-        },
-        {
-            "type": "vcs",
-            "url": "https://github.com/AEATech/transaction-manager-doctrine-adapter.git"
-        },
-        {
-            "type": "vcs",
-            "url": "https://github.com/AEATech/transaction-manager-common-transactions.git"
-        }
-    ],
     "require": {
         "php": ">=8.2",
         "ext-pdo": "*",
         "ext-pdo_mysql": "*",
-        "aeatech/transaction-manager-common-transactions": "dev-main",
-        "aeatech/transaction-manager-core": "dev-main"
+        "aeatech/transaction-manager-common-transactions": "^1.0",
+        "aeatech/transaction-manager-core": "^1.0"
     },
     "require-dev": {
-        "aeatech/transaction-manager-doctrine-adapter": "dev-main",
+        "aeatech/transaction-manager-doctrine-adapter": "^1.0",
         "mockery/mockery": "^1.6.10",
         "phpstan/phpstan": "^2.1",
         "phpstan/phpstan-mockery": "^2.0",
